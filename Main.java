@@ -1,8 +1,4 @@
-import java.awt.Color;
 import java.io.*;
-
-import javax.swing.JFrame;
-
 import Blue.*;
 
 public class Main {
@@ -32,6 +28,3 @@ public class Main {
     }
 
 }
-
-// (0.7853981633974483,1,2,3)
-// (1.0471975511965976,5,4,3)

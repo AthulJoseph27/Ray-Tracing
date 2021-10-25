@@ -1,14 +1,25 @@
 package Blue;
 
+import java.awt.*;
+
 public class Sphere implements Shape {
 
     public double radius, r2;
     public Point center;
+    public Color color;
 
     public Sphere(double radius, Point center) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
+        color = new Color(0xFFFFFF);
+    }
+
+    public Sphere(double radius, Point center, Color color) {
+        this.radius = radius;
+        this.r2 = radius * radius;
+        this.center = center;
+        this.color = color;
     }
 
     @Override
@@ -53,6 +64,115 @@ public class Sphere implements Shape {
         double c = q.magnitude * q.magnitude - r2;
 
         return (b * b - 4.0 * a * c) >= 0;
+    }
+
+    @Override
+    public boolean do_intersect(Vector ray) {
+        Vector u = Vector.unit_vector(ray);
+        Point p = new Point(ray.i, ray.j, ray.k);
+
+        Vector q = new Vector(center, p);
+
+        double a = u.magnitude * u.magnitude;
+        double b = 2.0 * Vector.dot_product(u, q);
+        double c = q.magnitude * q.magnitude - r2;
+
+        double d = (b * b - 4.0 * a * c);
+
+        if (d < 0)
+            return false;
+
+        d = Math.sqrt(d);
+
+        double x1 = (-b + d) / (2.0 * a);
+        double x2 = (-b - d) / (2.0 * a);
+
+        if (x1 < 0 && x2 < 0)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public Vector get_refeclected_ray(Point p, Vector u) {
+
+        Vector q = new Vector(center, p);
+
+        double a = u.magnitude * u.magnitude;
+        double b = 2.0 * Vector.dot_product(u, q);
+        double c = q.magnitude * q.magnitude - r2;
+
+        double d = b * b - 4.0 * a * c;
+
+        Vector r = new Vector(new Point(), p);
+        r.add(u);
+        r.unit_vector();
+
+        if (d < 0) {
+            /*
+             * (p.x,p.y,p.z) + t(u.i,u.j,u.k)
+             * 
+             * let t = 1, we get a vector....then scale it up/down to unit vector
+             */
+
+            return r;
+        }
+
+        d = Math.sqrt(d);
+
+        double x1 = (-b + d) / (2.0 * a);
+        double x2 = (-b - d) / (2.0 * a);
+
+        if (x1 < 0 && x2 < 0)
+            return r;
+
+        Vector p1 = new Vector(new Point(), p);
+        Vector p2 = new Vector(new Point(), p);
+
+        Vector pi = null;
+
+        Vector temp_u = u.copy();
+
+        temp_u.scale(x2);
+        p1.add(temp_u);
+        p1.unit_vector();
+
+        temp_u.unit_vector();
+        temp_u.scale(x1);
+        p2.add(temp_u);
+        p2.unit_vector();
+
+        if (x1 < 0) {
+            pi = p1;
+        } else if (x2 < 0) {
+            pi = p2;
+        }
+
+        Vector p_temp = new Vector(new Point(), p);
+
+        if (p_temp.euclidean_distance(p1) < p_temp.euclidean_distance(p2))
+            pi = p1;
+        else
+            pi = p2;
+
+        // System.out.println(pi);
+        Vector normal = new Vector(center, new Point(pi.i, pi.j, pi.k));
+        normal.unit_vector();
+        // System.out.println(normal);
+
+        normal.scale(2 * Vector.dot_product(pi, normal));
+        pi.substract(normal);
+        pi.unit_vector();
+        // System.out.println(pi);
+
+        // System.out.println();
+        return pi;
+
+    }
+
+    @Override
+    public Color get_color() {
+        return this.color;
     }
 
     @Override

@@ -19,6 +19,10 @@ public class Point {
         return Math.sqrt((x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) + (z - o.z) * (z - o.z));
     }
 
+    public Point copy() {
+        return new Point(x, y, z);
+    }
+
     @Override
     public String toString() {
         return "(x: " + x + " , y:" + y + " , z:" + z + ")";

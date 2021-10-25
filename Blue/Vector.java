@@ -43,14 +43,34 @@ public class Vector {
     }
 
     public static Vector unit_vector(Vector v) {
+        v.magnitude = v.get_magnitude();
         return new Vector(new Point(), new Point(v.i / v.magnitude, v.j / v.magnitude, v.k / v.magnitude));
     }
 
     public void unit_vector() {
+        magnitude = get_magnitude();
         i /= magnitude;
         j /= magnitude;
         k /= magnitude;
-        magnitude = 1.0;
+        magnitude = get_magnitude();
+    }
+
+    public void add(Vector o) {
+        i += o.i;
+        j += o.j;
+        k += o.k;
+        magnitude = get_magnitude();
+    }
+
+    public void substract(Vector o) {
+        i -= o.i;
+        j -= o.j;
+        k -= o.k;
+        magnitude = get_magnitude();
+    }
+
+    public double euclidean_distance(Vector o) {
+        return Math.sqrt((i - o.i) * (i - o.i) + (j - o.j) * (j - o.j) + (k - o.k) * (k - o.k));
     }
 
     public static double dot_product(Vector a, Vector b) {
@@ -66,7 +86,10 @@ public class Vector {
 
     public static double angle_between(Vector a, Vector b) {
         double dot_pd = Vector.dot_product(a, b);
-
+        // System.err.println(a + " " + b);
+        // System.err.println(dot_pd);
+        // System.err.println(a.magnitude + " " + b.magnitude);
+        // System.err.println(dot_pd / (a.magnitude * b.magnitude));
         return Math.acos(dot_pd / (a.magnitude * b.magnitude));
     }
 

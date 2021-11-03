@@ -2,7 +2,7 @@ package Blue;
 
 import java.awt.*;
 
-public class LightSource implements Shape {
+public class LightSource implements Shape, Callable {
     double radius, r2;
     double intensity;
     Color color;
@@ -34,13 +34,25 @@ public class LightSource implements Shape {
 
     @Override
     public boolean do_intersect(Point p, Vector u) {
-        Vector q = new Vector(center, p);
+        // check if the ray hits the center
 
-        double a = u.magnitude * u.magnitude;
-        double b = 2.0 * Vector.dot_product(u, q);
-        double c = q.magnitude * q.magnitude - r2;
+        // u can be considered a point, p can be considered a point and center of sphere
+        // another point
+        // slope pu = slope uc, ie , unit vector will be identical
 
-        return (b * b - 4.0 * a * c) >= 0;
+        Vector v1 = new Vector(p, new Point(u.i, u.j, u.k));
+
+        Vector v2 = new Vector(new Point(u.i, u.j, u.k), center);
+
+        // angle btw v1, v2 should be 0 or 180
+
+        double angle = Vector.angle_between(v1, v2);
+
+        if (Math.abs(angle) < 0.0001 || Math.abs((Math.abs(angle) - Math.PI)) < 0.0001)
+            return true;
+
+        return false;
+
     }
 
     @Override
@@ -79,8 +91,76 @@ public class LightSource implements Shape {
         // System.out.println(b ? "True" : "False");
     }
 
+    public double get_brightness(Point p, Vector ray) {
+
+        Vector u = ray.copy();
+        u.unit_vector();
+
+        Vector q = new Vector(center, p);
+
+        double a = u.magnitude * u.magnitude;
+        double b = 2.0 * Vector.dot_product(u, q);
+        double c = q.magnitude * q.magnitude - r2;
+
+        double d = (b * b - 4.0 * a * c);
+
+        if (d < 0)
+            return 0.0;
+
+        d = Math.sqrt(d);
+
+        double x1 = (-b + d) / (2.0 * a);
+        double x2 = (-b - d) / (2.0 * a);
+
+        if (x1 < 0 && x2 < 0)
+            return 0.0;
+
+        Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
+
+        Vector temp = u.copy();
+
+        temp.scale(x1);
+
+        p1.add(temp);
+
+        temp.unit_vector();
+        temp.scale(x2);
+
+        p2.add(temp);
+
+        if (x1 < 0)
+            p1 = null;
+        if (x2 < 0)
+            p2 = null;
+
+        Vector p_intersection = p1;
+
+        if (p1 != null && p2 != null) {
+            if (p.euclidean_distance(new Point(p1.i, p1.j, p1.k)) > p.euclidean_distance(new Point(p2.i, p2.j, p2.k))) {
+                p_intersection = p2;
+            } else {
+                p_intersection = p1;
+            }
+        } else {
+            if (p_intersection == null)
+                p_intersection = p2;
+
+            if (p_intersection == null) {
+                return 0.0;
+            }
+        }
+
+        Vector normal = new Vector(center, new Point(p_intersection.i, p_intersection.j, p_intersection.k));
+
+        double angle = Math.PI - Vector.angle_between(normal, ray);
+        if (angle > (Math.PI / 2.0))
+            return 0.0;
+
+        return 1.0 - angle / (Math.PI / 2.0);
+    }
+
     @Override
-    public Vector get_refeclected_ray(Point p, Vector u) {
+    public Vector[] get_intersection_point(Point p, Vector u) {
         throw new UnsupportedOperationException();
     }
 
@@ -90,7 +170,20 @@ public class LightSource implements Shape {
     }
 
     @Override
+    public void call(Point p, String type) {
+        if (type.compareTo("center") == 0) {
+            this.center = p;
+        }
+    }
+
+    @Override
+    public Vector get_reflected_ray(Vector normal, Vector ray) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String toString() {
         return "{LightSource ; radius: +" + radius + " , center : " + center + " , intensisty : " + intensity + "}";
     }
+
 }

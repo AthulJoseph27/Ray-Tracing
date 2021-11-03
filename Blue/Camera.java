@@ -5,8 +5,8 @@ import java.awt.*;
 public class Camera {
 
     Scene scene;
-    Plane plane;
     Point focus;
+    public Plane plane;
     int width, height;
     double focal_length;
     Color[][] frame;
@@ -58,26 +58,49 @@ public class Camera {
                     dir.unit_vector();
                     if (!obj.do_intersect(p, dir))
                         continue;
-                    Vector reflected_ray = obj.get_refeclected_ray(p, dir);
-                    if (scene.lightSource.do_intersect(reflected_ray)) {
-                        double angle = (2.0 * Math.PI - Vector.angle_between(dir, reflected_ray)) / (2.0 * Math.PI);
-                        Color ctemp = obj.get_color();
-                        // System.err.println(angle);
-                        // System.err.println(Math.round(ctemp.getRed() * angle));
-                        // System.err.println(Math.round(ctemp.getGreen() * angle));
-                        // System.err.println(Math.round(ctemp.getBlue() * angle));
 
-                        frame[y][x] = new Color((int) Math.round(ctemp.getRed() * angle),
-                                (int) Math.round(ctemp.getGreen() * angle), (int) Math.round(ctemp.getBlue() * angle));
-                        // System.err.println(angle + " " + frame[y][x]);
-                        set = true;
+                    Vector[] intersection_points = obj.get_intersection_point(p, dir);
+
+                    if (intersection_points == null)
+                        continue;
+
+                    Vector p_intersection = intersection_points[1];
+
+                    if (intersection_points[0] == null)
+                        p_intersection = intersection_points[1];
+                    if (intersection_points[1] == null)
+                        p_intersection = intersection_points[0];
+
+                    if (intersection_points[0] != null && intersection_points[1] != null) {
+                        if (p.euclidean_distance(new Point(intersection_points[0].i, intersection_points[0].j,
+                                intersection_points[0].k)) > p
+                                        .euclidean_distance(new Point(intersection_points[1].i,
+                                                intersection_points[1].j, intersection_points[1].k))) {
+                            p_intersection = intersection_points[1];
+                        } else {
+                            p_intersection = intersection_points[0];
+                        }
                     }
-                    // if (obj.do_intersect(p, dir)) {
-                    // frame[y][x] = new Color(0xFFFFFF);
-                    // }
+
+                    if (p_intersection == null)
+                        continue;
+
+                    Vector normal = new Vector(p, new Point(p_intersection.i, p_intersection.j, p_intersection.k));
+
+                    Vector reflected_ray = obj.get_reflected_ray(normal, dir);
+
+                    double factor = scene.lightSource.get_brightness(
+                            new Point(p_intersection.i, p_intersection.j, p_intersection.k), reflected_ray);
+                    factor = 1.0;
+                    Color color = obj.get_color();
+                    color = new Color((int) (color.getRed() * factor), (int) (color.getGreen() * factor),
+                            (int) (color.getBlue() * factor));
+                    frame[y][x] = color;
+                    set = true;
+
                 }
                 if (!set) {
-                    frame[y][x] = new Color(0);
+                    frame[y][x] = new Color(128, 128, 128);
                 }
             }
         }

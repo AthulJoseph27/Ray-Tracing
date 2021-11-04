@@ -85,13 +85,18 @@ public class Camera {
                     if (p_intersection == null)
                         continue;
 
+                    Vector dir_intersection = new Vector(p,
+                            new Point(p_intersection.i, p_intersection.j, p_intersection.k));
+
+                    if (Math.abs(Vector.angle_between(dir_intersection, dir) - Math.PI) == 0)
+                        continue;
+
                     Vector normal = new Vector(p, new Point(p_intersection.i, p_intersection.j, p_intersection.k));
 
                     Vector reflected_ray = obj.get_reflected_ray(normal, dir);
 
                     double factor = scene.lightSource.get_brightness(
                             new Point(p_intersection.i, p_intersection.j, p_intersection.k), reflected_ray);
-                    factor = 1.0;
                     Color color = obj.get_color();
                     color = new Color((int) (color.getRed() * factor), (int) (color.getGreen() * factor),
                             (int) (color.getBlue() * factor));

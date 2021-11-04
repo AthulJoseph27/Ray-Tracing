@@ -98,9 +98,10 @@ public class Vector {
         double rx[][] = { { 1, 0, 0 }, { 0, Math.cos(angle), (-Math.sin(angle)) },
                 { 0, Math.sin(angle), Math.cos(angle) } };
 
-        j = rx[1][0] * i + rx[1][1] * j + rx[1][2] * k;
+        double new_j;
+        new_j = rx[1][0] * i + rx[1][1] * j + rx[1][2] * k;
         k = rx[2][0] * i + rx[2][1] * j + rx[2][2] * k;
-
+        j = new_j;
     }
 
     public void rotateY(double angle) {
@@ -108,8 +109,10 @@ public class Vector {
         double ry[][] = { { Math.cos(angle), 0, Math.sin(angle) }, { 0, 1, 0 },
                 { (-Math.sin(angle)), 0, Math.cos(angle) } };
 
-        i = ry[0][0] * i + ry[0][1] * j + ry[0][2] * k;
+        double new_i;
+        new_i = ry[0][0] * i + ry[0][1] * j + ry[0][2] * k;
         k = ry[2][0] * i + ry[2][1] * j + ry[2][2] * k;
+        i = new_i;
 
     }
 
@@ -118,15 +121,20 @@ public class Vector {
         double ry[][] = { { Math.cos(angle), (-Math.sin(angle)), 0 }, { Math.sin(angle), Math.cos(angle), 0 },
                 { 0, 0, 1 } };
 
-        i = ry[0][0] * i + ry[0][1] * j + ry[0][2] * k;
+        double new_i;
+        new_i = ry[0][0] * i + ry[0][1] * j + ry[0][2] * k;
         j = ry[1][0] * i + ry[1][1] * j + ry[1][2] * k;
+        i = new_i;
 
     }
 
     public void custom_rotate(double[][] r) {
-        i = r[0][0] * i + r[0][1] * j + r[0][2] * k;
-        j = r[1][0] * i + r[1][1] * j + r[1][2] * k;
-        k = r[2][0] * i + r[2][1] * j + r[2][2] * k;
+        double new_i = r[0][0] * i + r[0][1] * j + r[0][2] * k;
+        double new_j = r[1][0] * i + r[1][1] * j + r[1][2] * k;
+        double new_k = r[2][0] * i + r[2][1] * j + r[2][2] * k;
+        i = new_i;
+        j = new_j;
+        k = new_k;
     }
 
     public void scale(double value) {

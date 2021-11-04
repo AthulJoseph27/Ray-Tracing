@@ -66,32 +66,32 @@ public class Sphere implements Shape, Callable {
         return (b * b - 4.0 * a * c) >= 0;
     }
 
-    @Override
-    public boolean do_intersect(Vector ray) {
-        Vector u = Vector.unit_vector(ray);
-        Point p = new Point(ray.i, ray.j, ray.k);
+    // @Override
+    // public boolean do_intersect(Vector ray) {
+    // Vector u = Vector.unit_vector(ray);
+    // Point p = new Point(ray.i, ray.j, ray.k);
 
-        Vector q = new Vector(center, p);
+    // Vector q = new Vector(center, p);
 
-        double a = u.magnitude * u.magnitude;
-        double b = 2.0 * Vector.dot_product(u, q);
-        double c = q.magnitude * q.magnitude - r2;
+    // double a = u.magnitude * u.magnitude;
+    // double b = 2.0 * Vector.dot_product(u, q);
+    // double c = q.magnitude * q.magnitude - r2;
 
-        double d = (b * b - 4.0 * a * c);
+    // double d = (b * b - 4.0 * a * c);
 
-        if (d < 0)
-            return false;
+    // if (d < 0)
+    // return false;
 
-        d = Math.sqrt(d);
+    // d = Math.sqrt(d);
 
-        double x1 = (-b + d) / (2.0 * a);
-        double x2 = (-b - d) / (2.0 * a);
+    // double x1 = (-b + d) / (2.0 * a);
+    // double x2 = (-b - d) / (2.0 * a);
 
-        if (x1 < 0 && x2 < 0)
-            return false;
+    // if (x1 < 0 && x2 < 0)
+    // return false;
 
-        return true;
-    }
+    // return true;
+    // }
 
     @Override
     public Vector[] get_intersection_point(Point p, Vector u) {

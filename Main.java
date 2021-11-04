@@ -10,8 +10,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Scene scene = new Scene();
-        scene.add(
-                new Plane(1500, 1500, new Point(0, 0, 400), new Vector(new Point(), new Point(0, 0, 1)), Color.ORANGE));
+        Plane pln = new Plane(600, 600, new Point(250, 400, -200), Math.PI / 3, 0.0, 0.0, Color.ORANGE);
+        System.out.println(pln);
+        scene.add(pln);
         scene.add(new Sphere(50, new Point(200, 0, 250), new Color(0, 255, 0)));
         scene.add(new Sphere(50, new Point(300, 0, 250), new Color(0, 0, 255)));
         Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
@@ -20,7 +21,6 @@ public class Main {
         new SliderXYZ(cam.plane, "Rotation", 0, 360, 0, "rotation");
         new SliderXYZ(scene.lightSource, "Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000),
                 new Point(0, 0, 0), "center");
-        // System.err.println(scene.lightSource);
         game_loop(window, cam);
 
     }

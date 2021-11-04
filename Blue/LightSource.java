@@ -55,41 +55,41 @@ public class LightSource implements Shape, Callable {
 
     }
 
-    @Override
-    public boolean do_intersect(Vector ray) {
+    // @Override
+    // public boolean do_intersect(Vector ray) {
 
-        /*
-         * here direction is given up ray
-         */
+    // /*
+    // * here direction is given up ray
+    // */
 
-        Vector u = Vector.unit_vector(ray);
-        Point p = new Point(ray.i, ray.j, ray.k);
+    // Vector u = Vector.unit_vector(ray);
+    // Point p = new Point(ray.i, ray.j, ray.k);
 
-        return do_intersect(p, u);
+    // return do_intersect(p, u);
 
-        // Vector q = new Vector(center, p);
+    // // Vector q = new Vector(center, p);
 
-        // double a = u.magnitude * u.magnitude;
-        // double b = 2.0 * Vector.dot_product(u, q);
-        // double c = q.magnitude * q.magnitude - r2;
+    // // double a = u.magnitude * u.magnitude;
+    // // double b = 2.0 * Vector.dot_product(u, q);
+    // // double c = q.magnitude * q.magnitude - r2;
 
-        // double d = (b * b - 4.0 * a * c);
+    // // double d = (b * b - 4.0 * a * c);
 
-        // if (d < 0)
-        // return false;
+    // // if (d < 0)
+    // // return false;
 
-        // d = Math.sqrt(d);
+    // // d = Math.sqrt(d);
 
-        // double x1 = (-b + d) / (2.0 * a);
-        // double x2 = (-b - d) / (2.0 * a);
+    // // double x1 = (-b + d) / (2.0 * a);
+    // // double x2 = (-b - d) / (2.0 * a);
 
-        // if (x1 < 0 && x2 < 0)
-        // return false;
+    // // if (x1 < 0 && x2 < 0)
+    // // return false;
 
-        // return true;
+    // // return true;
 
-        // System.out.println(b ? "True" : "False");
-    }
+    // // System.out.println(b ? "True" : "False");
+    // }
 
     public double get_brightness(Point p, Vector ray) {
 

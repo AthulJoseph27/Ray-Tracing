@@ -7,6 +7,7 @@ public class Camera {
     Scene scene;
     Point focus;
     public Plane plane;
+    private static final double ERROR_LIMIT = 0.000001;
     int width, height;
     double focal_length;
     Color[][] frame;
@@ -23,7 +24,7 @@ public class Camera {
     }
 
     public void update_angle(double rx, double ry, double rz) {
-        plane.update_angle(rx, ry, rz);
+        plane.update_orientation(rx, ry, rz);
     }
 
     private Point get_focus() {
@@ -85,18 +86,21 @@ public class Camera {
                     if (p_intersection == null)
                         continue;
 
-                    Vector dir_intersection = new Vector(p,
-                            new Point(p_intersection.i, p_intersection.j, p_intersection.k));
+                    // Vector dir_intersection = new Vector(p, p_intersection);
+                    // double dir_angle = Math.PI - Vector.angle_between(dir_intersection, dir);
 
-                    if (Math.abs(Vector.angle_between(dir_intersection, dir) - Math.PI) == 0)
-                        continue;
+                    // // System.out.println(Math.PI - Vector.angle_between(dir_intersection, dir));
+                    // if (dir_angle <= ERROR_LIMIT) {
+                    // // System.out.println(Vector.unit_vector(dir_intersection) + " " + dir);
+                    // continue;
+                    // }
 
-                    Vector normal = new Vector(p, new Point(p_intersection.i, p_intersection.j, p_intersection.k));
+                    Vector normal = obj.get_normal(p_intersection);
 
                     Vector reflected_ray = obj.get_reflected_ray(normal, dir);
 
-                    double factor = scene.lightSource.get_brightness(
-                            new Point(p_intersection.i, p_intersection.j, p_intersection.k), reflected_ray);
+                    double factor = scene.lightSource.get_brightness(new Point(p_intersection), normal, reflected_ray);
+
                     Color color = obj.get_color();
                     color = new Color((int) (color.getRed() * factor), (int) (color.getGreen() * factor),
                             (int) (color.getBlue() * factor));

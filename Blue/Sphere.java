@@ -25,7 +25,7 @@ public class Sphere implements Shape, Callable {
     @Override
     public boolean is_inside(Point p) {
         Vector v = new Vector(new Point(), center);
-        double magnitude = v.magnitude;
+        double magnitude = v.get_magnitude();
         magnitude *= magnitude;
         return magnitude <= r2;
     }
@@ -33,7 +33,7 @@ public class Sphere implements Shape, Callable {
     @Override
     public boolean is_on_surface(Point p) {
         Vector v = new Vector(new Point(), center);
-        double magnitude = v.magnitude;
+        double magnitude = v.get_magnitude();
         magnitude *= magnitude;
         return magnitude == r2;
     }
@@ -59,48 +59,26 @@ public class Sphere implements Shape, Callable {
 
         Vector q = new Vector(center, p);
 
-        double a = u.magnitude * u.magnitude;
+        double u_magnitude = u.get_magnitude(), q_magnitude = q.get_magnitude();
+        double a = u_magnitude * u_magnitude;
         double b = 2.0 * Vector.dot_product(u, q);
-        double c = q.magnitude * q.magnitude - r2;
+        double c = q_magnitude * q_magnitude - r2;
 
         return (b * b - 4.0 * a * c) >= 0;
     }
 
-    // @Override
-    // public boolean do_intersect(Vector ray) {
-    // Vector u = Vector.unit_vector(ray);
-    // Point p = new Point(ray.i, ray.j, ray.k);
-
-    // Vector q = new Vector(center, p);
-
-    // double a = u.magnitude * u.magnitude;
-    // double b = 2.0 * Vector.dot_product(u, q);
-    // double c = q.magnitude * q.magnitude - r2;
-
-    // double d = (b * b - 4.0 * a * c);
-
-    // if (d < 0)
-    // return false;
-
-    // d = Math.sqrt(d);
-
-    // double x1 = (-b + d) / (2.0 * a);
-    // double x2 = (-b - d) / (2.0 * a);
-
-    // if (x1 < 0 && x2 < 0)
-    // return false;
-
-    // return true;
-    // }
-
     @Override
     public Vector[] get_intersection_point(Point p, Vector u) {
+        Vector u_temp = u;
 
         Vector q = new Vector(center, p);
 
-        double a = u.magnitude * u.magnitude;
+        u.unit_vector();
+
+        double u_magnitude = u.get_magnitude(), q_magnitude = q.get_magnitude();
+        double a = u_magnitude * u_magnitude;
         double b = 2.0 * Vector.dot_product(u, q);
-        double c = q.magnitude * q.magnitude - r2;
+        double c = q_magnitude * q_magnitude - r2;
 
         double d = (b * b - 4.0 * a * c);
 
@@ -112,8 +90,10 @@ public class Sphere implements Shape, Callable {
         double x1 = (-b + d) / (2.0 * a);
         double x2 = (-b - d) / (2.0 * a);
 
-        if (x1 < 0 && x2 < 0)
+        if (x1 < 0 && x2 < 0) {
+            u = u_temp;
             return null;
+        }
 
         Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
 
@@ -133,84 +113,9 @@ public class Sphere implements Shape, Callable {
         if (x2 < 0)
             p2 = null;
 
-        return new Vector[] { p1, p1 };
+        u = u_temp;
 
-        // Vector q = new Vector(center, p);
-
-        // double a = u.magnitude * u.magnitude;
-        // double b = 2.0 * Vector.dot_product(u, q);
-        // double c = q.magnitude * q.magnitude - r2;
-
-        // double d = b * b - 4.0 * a * c;
-
-        // Vector r = new Vector(new Point(), p);
-        // r.add(u);
-        // r.unit_vector();
-
-        // if (d < 0) {
-        // /*
-        // * (p.x,p.y,p.z) + t(u.i,u.j,u.k)
-        // *
-        // * let t = 1, we get a vector....then scale it up/down to unit vector
-        // */
-
-        // return r;
-        // }
-
-        // d = Math.sqrt(d);
-
-        // double x1 = (-b + d) / (2.0 * a);
-        // double x2 = (-b - d) / (2.0 * a);
-
-        // if (x1 < 0 && x2 < 0)
-        // return r;
-
-        // Vector p1 = new Vector(new Point(), p);
-        // Vector p2 = new Vector(new Point(), p);
-
-        // Vector pi = null;
-
-        // Vector temp_u = u.copy();
-
-        // temp_u.scale(x2);
-        // p1.add(temp_u);
-        // p1.unit_vector();
-
-        // temp_u.unit_vector();
-        // temp_u.scale(x1);
-        // p2.add(temp_u);
-        // p2.unit_vector();
-
-        // if (x1 < 0 && x2 < 0) {
-        // return null;
-        // }
-
-        // if (x1 < 0) {
-        // pi = p2;
-        // } else if (x2 < 0) {
-        // pi = p1;
-        // }
-
-        // Vector p_temp = new Vector(new Point(), p);
-
-        // if (p_temp.euclidean_distance(p1) < p_temp.euclidean_distance(p2))
-        // pi = p1;
-        // else
-        // pi = p2;
-
-        // // System.out.println(pi);
-        // Vector normal = new Vector(center, new Point(pi.i, pi.j, pi.k));
-        // normal.unit_vector();
-        // // System.out.println(normal);
-
-        // normal.scale(2 * Vector.dot_product(pi, normal));
-        // pi.substract(normal);
-        // pi.unit_vector();
-        // // System.out.println(pi);
-
-        // // System.out.println();
-        // return pi;
-
+        return new Vector[] { p1, p2 };
     }
 
     @Override
@@ -228,8 +133,12 @@ public class Sphere implements Shape, Callable {
 
     @Override
     public Vector get_reflected_ray(Vector normal, Vector ray) {
-        Vector n = normal.copy();
-        Vector d = ray.copy();
+
+        if (Vector.angle_between(normal, ray) <= (Math.PI / 2.0))
+            return ray;
+
+        Vector n = Vector.unit_vector(normal);
+        Vector d = Vector.unit_vector(ray);
 
         // Reflected ray = d - 2*(d.n)n^
 
@@ -238,6 +147,11 @@ public class Sphere implements Shape, Callable {
         d.substract(n);
 
         return d;
+    }
+
+    @Override
+    public Vector get_normal(Vector intersection) {
+        return new Vector(this.center, intersection);
     }
 
     @Override

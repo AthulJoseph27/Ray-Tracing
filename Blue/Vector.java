@@ -2,20 +2,35 @@ package Blue;
 
 public class Vector {
     public double i, j, k;
-    public double magnitude;
 
     public Vector(Point start, Point end) {
         i = end.x - start.x;
         j = end.y - start.y;
         k = end.z - start.z;
-        magnitude = get_magnitude();
+    }
+
+    public Vector(Point start, Vector end) {
+        i = end.i - start.x;
+        j = end.j - start.y;
+        k = end.k - start.z;
+    }
+
+    public Vector(Vector start, Point end) {
+        i = end.x - start.i;
+        j = end.y - start.j;
+        k = end.z - start.k;
+    }
+
+    public Vector(Vector start, Vector end) {
+        i = end.i - start.i;
+        j = end.j - start.j;
+        k = end.k - start.k;
     }
 
     public Vector() {
         i = 0;
         j = 0;
         k = 0;
-        magnitude = 0;
     }
 
     @Override
@@ -31,24 +46,24 @@ public class Vector {
     }
 
     public double get_alpha() {
-        return Math.acos(i / magnitude);
+        return Math.acos(i / get_magnitude());
     }
 
     public double get_beta() {
-        return Math.acos(i / magnitude);
+        return Math.acos(i / get_magnitude());
     }
 
     public double get_gamma() {
-        return Math.acos(i / magnitude);
+        return Math.acos(i / get_magnitude());
     }
 
     public static Vector unit_vector(Vector v) {
-        v.magnitude = v.get_magnitude();
-        return new Vector(new Point(), new Point(v.i / v.magnitude, v.j / v.magnitude, v.k / v.magnitude));
+        double magnitude = v.get_magnitude();
+        return new Vector(new Point(), new Point(v.i / magnitude, v.j / magnitude, v.k / magnitude));
     }
 
     public void unit_vector() {
-        magnitude = get_magnitude();
+        double magnitude = get_magnitude();
         i /= magnitude;
         j /= magnitude;
         k /= magnitude;
@@ -59,14 +74,12 @@ public class Vector {
         i += o.i;
         j += o.j;
         k += o.k;
-        magnitude = get_magnitude();
     }
 
     public void substract(Vector o) {
         i -= o.i;
         j -= o.j;
         k -= o.k;
-        magnitude = get_magnitude();
     }
 
     public double euclidean_distance(Vector o) {
@@ -86,11 +99,8 @@ public class Vector {
 
     public static double angle_between(Vector a, Vector b) {
         double dot_pd = Vector.dot_product(a, b);
-        // System.err.println(a + " " + b);
-        // System.err.println(dot_pd);
-        // System.err.println(a.magnitude + " " + b.magnitude);
-        // System.err.println(dot_pd / (a.magnitude * b.magnitude));
-        return Math.acos(dot_pd / (a.magnitude * b.magnitude));
+        double result = (double) Math.round(dot_pd / (a.get_magnitude() * b.get_magnitude()) * 1000000) / 1000000.0;
+        return Math.acos(result);
     }
 
     public void rotateX(double angle) {
@@ -141,7 +151,6 @@ public class Vector {
         i *= value;
         j *= value;
         k *= value;
-        magnitude = get_magnitude();
     }
 
     public Vector copy() {

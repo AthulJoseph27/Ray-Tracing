@@ -25,8 +25,33 @@ public class Point {
         return Math.sqrt((x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) + (z - o.z) * (z - o.z));
     }
 
+    public double euclidean_distance(Vector o) {
+        return Math.sqrt((x - o.i) * (x - o.i) + (y - o.j) * (y - o.j) + (z - o.k) * (z - o.k));
+    }
+
     public Point copy() {
         return new Point(x, y, z);
+    }
+
+    public static Vector get_closest_point(Point p, Vector[] intersections) {
+        if (intersections == null)
+            return null;
+
+        Vector result = null;
+        double dist = Double.MAX_VALUE;
+
+        for (Vector v : intersections) {
+            if (v == null) {
+                continue;
+            }
+            double _temp = p.euclidean_distance(v);
+            if (result == null || (_temp < dist)) {
+                dist = _temp;
+                result = v;
+            }
+        }
+
+        return result;
     }
 
     @Override

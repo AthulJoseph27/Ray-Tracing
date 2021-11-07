@@ -10,7 +10,8 @@ public class Scene {
 
     public Scene() {
         objects = new ArrayList<Shape>();
-        lightSource = new SpotLight(new Point(250, 500, 200), 500, 1);
+
+        lightSource = new SpotLight(new Point(0, 0, 0), 200, 1);
     }
 
     public Scene(LightSource lightSource) {

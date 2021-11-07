@@ -7,10 +7,19 @@ public class Camera {
     Scene scene;
     Point focus;
     public Plane plane;
-    private static final double ERROR_LIMIT = 0.000001;
     int width, height;
     double focal_length;
     Color[][] frame;
+
+    private class Vector_Index {
+        Vector v;
+        int index;
+
+        Vector_Index(Vector v, int index) {
+            this.v = v;
+            this.index = index;
+        }
+    }
 
     public Camera(int width, int height, Scene scene, double focal_length) {
         this.width = width;
@@ -48,72 +57,138 @@ public class Camera {
         }
     }
 
+    private Color brighter(double scale, Color color) {
+        return new Color((int) (color.getRed() * scale), (int) (color.getGreen() * scale),
+                (int) (color.getBlue() * scale), 255);
+    }
+
+    private Vector_Index get_intersection_point(Point p, Vector u, int skip_index) {
+        Vector intersection_point = null;
+
+        int index = -1;
+
+        for (int i = 0; i < scene.objects.size(); i++) {
+            if (i == skip_index)
+                continue;
+            Vector _ip = Point.get_closest_point(p, scene.objects.get(i).get_intersection_point(p, u));
+            if (_ip == null)
+                continue;
+            if ((intersection_point == null) || p.euclidean_distance(_ip) < p.euclidean_distance(intersection_point)) {
+                intersection_point = _ip;
+                index = i;
+            }
+        }
+
+        return new Vector_Index(intersection_point, index);
+    }
+
+    private Color reflect_ray(int depth, Point p, Vector ray) {
+
+        Vector u = Vector.unit_vector(ray);
+
+        Vector_Index vi = get_intersection_point(p, u, -1);
+
+        if (vi.v == null)
+            return new Color(0);
+
+        Vector reflected_ray = scene.objects.get(vi.index)
+                .get_reflected_ray(scene.objects.get(vi.index).get_normal(vi.v), u);
+
+        if (depth == 0) {
+
+            // checking if the reflected ray hits any object
+            Vector_Index v_next = get_intersection_point(new Point(vi.v), reflected_ray, vi.index);
+            double _dist = v_next.v == null ? Double.MAX_VALUE : (new Point(v_next.v)).euclidean_distance(vi.v);
+            // System.out.println(_dist + " " + v_next.v + " " + vi.v);
+
+            return brighter(scene.lightSource.get_brightness(p, scene.objects.get(vi.index).get_normal(vi.v),
+                    reflected_ray, _dist), scene.objects.get(vi.index).get_color());
+        }
+
+        return reflect_ray(depth - 1, new Point(vi.v), reflected_ray);
+
+    }
+
     public Color[][] get_frame() {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Point p = plane.transform_coordinate(new Point(x, 0, y));
+                // boolean set = false;
+                // for (Shape obj : scene.objects) {
+                // Vector dir = new Vector(focus, p);
+                // dir.unit_vector();
+                // if (!obj.do_intersect(p, dir))
+                // continue;
+
+                // Vector[] intersection_points = obj.get_intersection_point(p, dir);
+
+                // if (intersection_points == null)
+                // continue;
+
+                // Vector p_intersection = intersection_points[1];
+
+                // if (intersection_points[0] == null)
+                // p_intersection = intersection_points[1];
+                // if (intersection_points[1] == null)
+                // p_intersection = intersection_points[0];
+
+                // if (intersection_points[0] != null && intersection_points[1] != null) {
+                // if (p.euclidean_distance(new Point(intersection_points[0].i,
+                // intersection_points[0].j,
+                // intersection_points[0].k)) > p
+                // .euclidean_distance(new Point(intersection_points[1].i,
+                // intersection_points[1].j, intersection_points[1].k))) {
+                // p_intersection = intersection_points[1];
+                // } else {
+                // p_intersection = intersection_points[0];
+                // }
+                // }
+
+                // if (p_intersection == null)
+                // continue;
+
+                // Vector normal = obj.get_normal(p_intersection);
+
+                // Vector reflected_ray = obj.get_reflected_ray(normal, dir);
+
+                // double factor = scene.lightSource.get_brightness(new Point(p_intersection),
+                // normal, reflected_ray);
+
+                // Color color = obj.get_color();
+                // color = new Color((int) (color.getRed() * factor), (int) (color.getGreen() *
+                // factor),
+                // (int) (color.getBlue() * factor));
+                // frame[y][x] = color;
+                // set = true;
+
+                // }
+                // if (!set) {
+                // frame[y][x] = new Color(128, 128, 128);
+                // }
+
                 boolean set = false;
+
                 for (Shape obj : scene.objects) {
-                    Vector dir = new Vector(focus, p);
-                    dir.unit_vector();
-                    if (!obj.do_intersect(p, dir))
-                        continue;
-
-                    Vector[] intersection_points = obj.get_intersection_point(p, dir);
-
-                    if (intersection_points == null)
-                        continue;
-
-                    Vector p_intersection = intersection_points[1];
-
-                    if (intersection_points[0] == null)
-                        p_intersection = intersection_points[1];
-                    if (intersection_points[1] == null)
-                        p_intersection = intersection_points[0];
-
-                    if (intersection_points[0] != null && intersection_points[1] != null) {
-                        if (p.euclidean_distance(new Point(intersection_points[0].i, intersection_points[0].j,
-                                intersection_points[0].k)) > p
-                                        .euclidean_distance(new Point(intersection_points[1].i,
-                                                intersection_points[1].j, intersection_points[1].k))) {
-                            p_intersection = intersection_points[1];
-                        } else {
-                            p_intersection = intersection_points[0];
-                        }
+                    if (obj.do_intersect(p, new Vector(focus, p))) {
+                        frame[height - y - 1][x] = obj.get_color();
+                        set = true;
                     }
-
-                    if (p_intersection == null)
-                        continue;
-
-                    // Vector dir_intersection = new Vector(p, p_intersection);
-                    // double dir_angle = Math.PI - Vector.angle_between(dir_intersection, dir);
-
-                    // // System.out.println(Math.PI - Vector.angle_between(dir_intersection, dir));
-                    // if (dir_angle <= ERROR_LIMIT) {
-                    // // System.out.println(Vector.unit_vector(dir_intersection) + " " + dir);
-                    // continue;
-                    // }
-
-                    Vector normal = obj.get_normal(p_intersection);
-
-                    Vector reflected_ray = obj.get_reflected_ray(normal, dir);
-
-                    double factor = scene.lightSource.get_brightness(new Point(p_intersection), normal, reflected_ray);
-
-                    Color color = obj.get_color();
-                    color = new Color((int) (color.getRed() * factor), (int) (color.getGreen() * factor),
-                            (int) (color.getBlue() * factor));
-                    frame[y][x] = color;
-                    set = true;
-
                 }
                 if (!set) {
-                    frame[y][x] = new Color(128, 128, 128);
+                    frame[height - y - 1][x] = new Color(128, 128, 128);
                 }
+                // frame[height-y-1][x] = reflect_ray(0, p, new Vector(focus, p));
             }
         }
+
         return frame;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + " focus='" + focus + "'" + ", plane='" + plane + "'" + ", width='" + width + "'" + ", height='"
+                + height + "'" + ", focal_length='" + focal_length + "'" + "}";
     }
 
 }

@@ -33,14 +33,6 @@ public class Vector {
         k = 0;
     }
 
-    @Override
-    public String toString() {
-        String sign_i = i < 0 ? "-" : "";
-        String sign_j = j < 0 ? "- " : "+ ";
-        String sign_k = k < 0 ? "- " : "+ ";
-        return sign_i + Math.abs(i) + "i " + sign_j + Math.abs(j) + "j " + sign_k + Math.abs(k) + "k";
-    }
-
     public double get_magnitude() {
         return Math.sqrt(i * i + j * j + k * k);
     }
@@ -157,4 +149,11 @@ public class Vector {
         return new Vector(new Point(), new Point(i, j, k));
     }
 
+    @Override
+    public String toString() {
+        String sign_i = i < 0 ? "-" : "";
+        String sign_j = j < 0 ? "- " : "+ ";
+        String sign_k = k < 0 ? "- " : "+ ";
+        return sign_i + Math.abs(i) + "i " + sign_j + Math.abs(j) + "j " + sign_k + Math.abs(k) + "k";
+    }
 }

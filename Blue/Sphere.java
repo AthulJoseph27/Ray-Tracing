@@ -64,7 +64,21 @@ public class Sphere implements Shape, Callable {
         double b = 2.0 * Vector.dot_product(u, q);
         double c = q_magnitude * q_magnitude - r2;
 
-        return (b * b - 4.0 * a * c) >= 0;
+        double d = (b * b - 4.0 * a * c);
+
+        if (d < 0)
+            return false;
+
+        d = Math.sqrt(d);
+
+        double x1 = (-b + d) / (2.0 * a);
+        double x2 = (-b - d) / (2.0 * a);
+
+        if (x1 < 0 && x2 < 0) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

@@ -163,7 +163,17 @@ public class Plane implements Callable, Shape {
     public boolean do_intersect(Point point, Vector dir) {
         Vector[] intersection = get_intersection_point(point, dir);
 
-        return intersection[0] != null;
+        if (intersection == null || intersection[0] == null)
+            return false;
+
+        Vector dir_hit = new Vector(point, intersection[0]);
+
+        double angle = Vector.angle_between(dir_hit, dir);
+
+        if ((Math.PI - angle) <= Limit.ERROR_LIMIT)
+            return false;
+
+        return true;
     }
 
     @Override
@@ -202,6 +212,7 @@ public class Plane implements Callable, Shape {
          * 
          * t(n.u) + n.p = c.n R = c.n; Q = n.p; S = u.p; t = (R-Q)/S
          */
+
         Vector u_temp = u.copy();
         u.unit_vector();
 

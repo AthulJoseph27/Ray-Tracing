@@ -11,17 +11,14 @@ public class AreaLight extends Plane implements LightSource {
 
     @Override
     public double get_brightness(Point p, Vector normal, Vector ray, double distance_to_nearest_object) {
-        Vector[] intersections = get_intersection_point(p, ray);
-        if (intersections == null)
+        Vector intersection = get_intersection_point(p, ray);
+        if (intersection == null)
             return 0.0;
 
-        if (intersections[0] == null && intersections[1] == null)
+        if (p.euclidean_distance(intersection) > distance_to_nearest_object)
             return 0.0;
 
-        if (p.euclidean_distance(Point.get_closest_point(p, intersections)) > distance_to_nearest_object)
-            return 0.0;
-
-        double angle = Vector.angle_between(normal, ray);
+        double angle = Math.PI - Vector.angle_between(normal, ray);
 
         if (angle >= (Math.PI / 2.0))
             return 0.0;

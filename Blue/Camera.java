@@ -57,7 +57,7 @@ public class Camera {
         }
     }
 
-    private Color brighter(double scale, Color color) {
+    private Color adjust_brightness(double scale, Color color) {
         return new Color((int) (color.getRed() * scale), (int) (color.getGreen() * scale),
                 (int) (color.getBlue() * scale), 255);
     }
@@ -70,7 +70,7 @@ public class Camera {
         for (int i = 0; i < scene.objects.size(); i++) {
             if (i == skip_index)
                 continue;
-            Vector _ip = Point.get_closest_point(p, scene.objects.get(i).get_intersection_point(p, u));
+            Vector _ip = scene.objects.get(i).get_intersection_point(p, u);
             if (_ip == null)
                 continue;
             if ((intersection_point == null) || p.euclidean_distance(_ip) < p.euclidean_distance(intersection_point)) {
@@ -91,17 +91,17 @@ public class Camera {
         if (vi.v == null)
             return new Color(0);
 
-        Vector reflected_ray = scene.objects.get(vi.index)
-                .get_reflected_ray(scene.objects.get(vi.index).get_normal(vi.v), u);
+        Vector reflected_ray = scene.objects.get(vi.index).get_reflected_ray(vi.v, u);
 
         if (depth == 0) {
 
             // checking if the reflected ray hits any object
             Vector_Index v_next = get_intersection_point(new Point(vi.v), reflected_ray, vi.index);
-            double _dist = v_next.v == null ? Double.MAX_VALUE : (new Point(v_next.v)).euclidean_distance(vi.v);
+            double _dist = Double.MAX_VALUE;// v_next.v == null ? Double.MAX_VALUE : (new
+                                            // Point(v_next.v)).euclidean_distance(vi.v);
             // System.out.println(_dist + " " + v_next.v + " " + vi.v);
 
-            return brighter(scene.lightSource.get_brightness(p, scene.objects.get(vi.index).get_normal(vi.v),
+            return adjust_brightness(scene.lightSource.get_brightness(p, scene.objects.get(vi.index).get_normal(vi.v),
                     reflected_ray, _dist), scene.objects.get(vi.index).get_color());
         }
 
@@ -116,69 +116,14 @@ public class Camera {
                 Point p = plane.transform_coordinate(new Point(x, 0, y));
                 // boolean set = false;
                 // for (Shape obj : scene.objects) {
-                // Vector dir = new Vector(focus, p);
-                // dir.unit_vector();
-                // if (!obj.do_intersect(p, dir))
-                // continue;
-
-                // Vector[] intersection_points = obj.get_intersection_point(p, dir);
-
-                // if (intersection_points == null)
-                // continue;
-
-                // Vector p_intersection = intersection_points[1];
-
-                // if (intersection_points[0] == null)
-                // p_intersection = intersection_points[1];
-                // if (intersection_points[1] == null)
-                // p_intersection = intersection_points[0];
-
-                // if (intersection_points[0] != null && intersection_points[1] != null) {
-                // if (p.euclidean_distance(new Point(intersection_points[0].i,
-                // intersection_points[0].j,
-                // intersection_points[0].k)) > p
-                // .euclidean_distance(new Point(intersection_points[1].i,
-                // intersection_points[1].j, intersection_points[1].k))) {
-                // p_intersection = intersection_points[1];
-                // } else {
-                // p_intersection = intersection_points[0];
-                // }
-                // }
-
-                // if (p_intersection == null)
-                // continue;
-
-                // Vector normal = obj.get_normal(p_intersection);
-
-                // Vector reflected_ray = obj.get_reflected_ray(normal, dir);
-
-                // double factor = scene.lightSource.get_brightness(new Point(p_intersection),
-                // normal, reflected_ray);
-
-                // Color color = obj.get_color();
-                // color = new Color((int) (color.getRed() * factor), (int) (color.getGreen() *
-                // factor),
-                // (int) (color.getBlue() * factor));
-                // frame[y][x] = color;
+                // if (obj.do_intersect(p, new Vector(focus, p))) {
+                // frame[height - y - 1][x] = obj.get_color();
                 // set = true;
-
                 // }
-                // if (!set) {
-                // frame[y][x] = new Color(128, 128, 128);
                 // }
-
-                boolean set = false;
-
-                for (Shape obj : scene.objects) {
-                    if (obj.do_intersect(p, new Vector(focus, p))) {
-                        frame[height - y - 1][x] = obj.get_color();
-                        set = true;
-                    }
-                }
-                if (!set) {
-                    frame[height - y - 1][x] = new Color(128, 128, 128);
-                }
-                // frame[height-y-1][x] = reflect_ray(0, p, new Vector(focus, p));
+                // if (!set)
+                // frame[height - y - 1][x] = new Color(128, 128, 128);
+                frame[height - y - 1][x] = reflect_ray(0, p, new Vector(focus, p));
             }
         }
 

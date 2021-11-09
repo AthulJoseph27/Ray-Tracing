@@ -161,31 +161,27 @@ public class Plane implements Callable, Shape {
 
     @Override
     public boolean do_intersect(Point point, Vector dir) {
-        Vector[] intersection = get_intersection_point(point, dir);
+        Vector intersection = get_intersection_point(point, dir);
 
-        if (intersection == null || intersection[0] == null)
+        if (intersection == null)
             return false;
 
-        Vector dir_hit = new Vector(point, intersection[0]);
+        // Vector dir_hit = new Vector(point, intersection[0]);
 
-        double angle = Vector.angle_between(dir_hit, dir);
+        // double angle = Vector.angle_between(dir_hit, dir);
 
-        if ((Math.PI - angle) <= Limit.ERROR_LIMIT)
-            return false;
+        // if ((Math.PI - angle) <= Limit.ERROR_LIMIT)
+        // return false;
 
         return true;
     }
 
     @Override
-    public Vector get_reflected_ray(Vector normal, Vector ray) {
-        if (Vector.angle_between(normal, ray) <= (Math.PI / 2.0))
-            return ray;
-
-        Vector[] intersection_point = get_intersection_point(new Point(), ray);
+    public Vector get_reflected_ray(Vector intersection_point, Vector ray) {
 
         // d = d - (2*d.n)n
 
-        if (intersection_point[0] == null)
+        if (intersection_point == null)
             return ray;
 
         Vector d = Vector.unit_vector(ray);
@@ -196,14 +192,13 @@ public class Plane implements Callable, Shape {
 
         d.substract(n);
 
-        // System.out.println(Math.toDegrees(Vector.angle_between(normal, ray)) + " "
-        // + Math.toDegrees(Vector.angle_between(normal, d)));
+        // System.out.println(ray + " " + normal + " " + d);
 
         return d;
     }
 
     @Override
-    public Vector[] get_intersection_point(Point p, Vector u) {
+    public Vector get_intersection_point(Point p, Vector u) {
 
         /*
          * Vector passing through p and direction u => V = p + t*u; CV.N = 0
@@ -216,8 +211,6 @@ public class Plane implements Callable, Shape {
         Vector u_temp = u.copy();
         u.unit_vector();
 
-        Vector[] result = { null, null };
-
         Vector c = new Vector(new Point(), center);
         double R = Vector.dot_product(normal, c);
         double Q = Vector.dot_product(normal, new Vector(new Point(), p));
@@ -225,7 +218,7 @@ public class Plane implements Callable, Shape {
 
         if (S == 0) {
             u = u_temp;
-            return result;
+            return null;
         }
 
         double t = (R - Q) / S;
@@ -243,12 +236,13 @@ public class Plane implements Callable, Shape {
         double _width = Math.abs(dist * Math.cos(angle));
         double _height = Math.abs(dist * Math.sin(angle));
 
+        u = u_temp;
+
         if (_width <= width / 2.0 && _height <= height / 2.0) {
-            result[0] = intersection;
+            return intersection;
         }
 
-        u = u_temp;
-        return result;
+        return null;
     }
 
     @Override
@@ -267,7 +261,7 @@ public class Plane implements Callable, Shape {
 
     @Override
     public Vector get_normal(Vector intersection) {
-        return this.normal.copy();
+        return this.normal;
     }
 
     @Override

@@ -11,28 +11,24 @@ public class Main {
     public static void main(String[] args) throws IOException {
         LightSource lightSource = new AreaLight(200, 200, new Point(-250, 200, 200), 0.0, 0.0, Math.PI, Color.WHITE);
         Scene scene = new Scene();
-        // scene.add(new Plane(100, 100, new Point(300, 0, 2A50), 0.0, 0.0, 0.0,
-        // Color.ORANGE));
+
         Plane pln = new Plane(400, 500, new Point(250, 200, 250), 0.0, 0.0, 0.0, Color.ORANGE);
         scene.add(pln);
         // System.out.println(pln);
 
-        Sphere sph = new Sphere(30, new Point(300, 0, 250), new Color(255, 255, 255));
-
-        scene.add(new Sphere(30, new Point(50, 200, 250), new Color(0, 255, 0)));
+        scene.add(new Sphere(30, new Point(50, 0, 250), new Color(0, 255, 0)));
         scene.add(new Sphere(30, new Point(200, 0, 250), new Color(0, 0, 255)));
-        scene.add(sph);
+        scene.add(new Sphere(30, new Point(300, 0, 250), new Color(255, 255, 255)));
 
         Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
-
-        System.out.println(cam);
 
         Window window = new Window(WIDTH, HEIGHT);
         new SliderXYZ(cam.plane, "Rotation", 0, 360, 0, "rotation");
         new SliderXYZ((Callable) scene.lightSource, "Location", new Point(-1000, -1000, -1000),
                 new Point(1000, 1000, 1000), new Point(0, 0, 0), "center");
-        new SliderXYZ((Callable) pln, "Plane Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000),
-                new Point(0, 0, 0), "center");
+        // new SliderXYZ((Callable) pln, "Plane Location", new Point(-1000, -1000,
+        // -1000), new Point(1000, 1000, 1000),
+        // new Point(0, 0, 0), "center");
         game_loop(window, cam);
 
     }

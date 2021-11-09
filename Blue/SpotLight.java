@@ -16,24 +16,13 @@ public class SpotLight extends Sphere implements LightSource {
     }
 
     @Override
-    public double get_brightness(Point p, Vector normal, Vector ray, double distance_to_nearest_object) {
-        Vector[] intersections = get_intersection_point(p, ray);
+    public double get_brightness(Point p, Vector obj_normal, Vector reflected_ray, double distance_to_nearest_object) {
+        Vector intersections = get_intersection_point(p, reflected_ray);
 
         if (intersections == null)
             return 0.0;
 
-        if (intersections[0] == null && intersections[1] == null)
-            return 0.0;
-
-        // System.out.println(
-        // p.euclidean_distance(Point.get_closest_point(p, intersections)) + " " +
-        // distance_to_nearest_object);
-        // if (p.euclidean_distance(Point.get_closest_point(p, intersections)) >
-        // distance_to_nearest_object)
-        // return 0.0;
-
-        double angle = Vector.angle_between(normal, ray);
-
+        double angle = Vector.angle_between(obj_normal, reflected_ray);
         if (angle >= (Math.PI / 2.0))
             return 0.0;
 

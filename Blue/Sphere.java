@@ -39,7 +39,7 @@ public class Sphere implements Shape, Callable {
     }
 
     @Override
-    public boolean do_intersect(Point p, Vector u) {
+    public boolean do_intersect(Point p, Vector ray) {
 
         /*
          * A ray passing through point P and direction vector U can be represented as
@@ -57,22 +57,23 @@ public class Sphere implements Shape, Callable {
          * d = b^2 - 4ac ; --> d >= 0
          */
 
+        Vector u = Vector.unit_vector(ray);
+
         Vector q = new Vector(center, p);
 
-        double u_magnitude = u.get_magnitude(), q_magnitude = q.get_magnitude();
-        double a = u_magnitude * u_magnitude;
+        double q_magnitude = q.get_magnitude();
         double b = 2.0 * Vector.dot_product(u, q);
         double c = q_magnitude * q_magnitude - r2;
 
-        double d = (b * b - 4.0 * a * c);
+        double d = (b * b - 4.0 * c); // b^2 - 4ac, here a = 1.0
 
         if (d < 0)
             return false;
 
         d = Math.sqrt(d);
 
-        double x1 = (-b + d) / (2.0 * a);
-        double x2 = (-b - d) / (2.0 * a);
+        double x1 = (-b + d) / 2.0;
+        double x2 = (-b - d) / 2.0;
 
         if (x1 < 0 && x2 < 0) {
             return false;
@@ -82,74 +83,44 @@ public class Sphere implements Shape, Callable {
     }
 
     @Override
-    public Vector[] get_intersection_point(Point p, Vector u) {
-        Vector u_temp = u;
+    public Vector get_intersection_point(Point p, Vector ray) {
+        Vector u = Vector.unit_vector(ray);
 
         Vector q = new Vector(center, p);
-
-        u.unit_vector();
-
-        double u_magnitude = u.get_magnitude(), q_magnitude = q.get_magnitude();
-        double a = u_magnitude * u_magnitude;
+        double q_magnitude = q.get_magnitude();
         double b = 2.0 * Vector.dot_product(u, q);
         double c = q_magnitude * q_magnitude - r2;
 
-        double d = (b * b - 4.0 * a * c);
+        double d = (b * b - 4.0 * c);
 
         if (d < 0)
             return null;
 
         d = Math.sqrt(d);
 
-        double x1 = (-b + d) / (2.0 * a);
-        double x2 = (-b - d) / (2.0 * a);
+        double x1 = (-b + d) / 2.0;
+        double x2 = (-b - d) / 2.0;
 
         if (x1 < 0 && x2 < 0) {
-            u = u_temp;
             return null;
         }
 
-        Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
+        double x = Math.min(x1, x2);
 
-        Vector temp = u.copy();
+        Vector pi = new Vector(new Point(), p);
 
-        temp.scale(x1);
+        Vector t = u.copy();
+        t.scale(x);
 
-        p1.add(temp);
+        pi.add(t);
 
-        temp.unit_vector();
-        temp.scale(x2);
-
-        p2.add(temp);
-
-        if (x1 < 0)
-            p1 = null;
-        if (x2 < 0)
-            p2 = null;
-
-        u = u_temp;
-
-        return new Vector[] { p1, p2 };
+        return pi;
     }
 
     @Override
-    public Color get_color() {
-        return this.color;
-    }
+    public Vector get_reflected_ray(Vector intersection_point, Vector ray) {
 
-    @Override
-    public void call(Point p, String type) {
-        if (type.compareTo("center") == 0) {
-            this.center = p;
-        }
-
-    }
-
-    @Override
-    public Vector get_reflected_ray(Vector normal, Vector ray) {
-
-        if (Vector.angle_between(normal, ray) <= (Math.PI / 2.0))
-            return ray;
+        Vector normal = new Vector(this.center, intersection_point);
 
         Vector n = Vector.unit_vector(normal);
         Vector d = Vector.unit_vector(ray);
@@ -166,6 +137,19 @@ public class Sphere implements Shape, Callable {
     @Override
     public Vector get_normal(Vector intersection) {
         return new Vector(this.center, intersection);
+    }
+
+    @Override
+    public Color get_color() {
+        return this.color;
+    }
+
+    @Override
+    public void call(Point p, String type) {
+        if (type.compareTo("center") == 0) {
+            this.center = p;
+        }
+
     }
 
     @Override

@@ -14,7 +14,7 @@ interface Shape {
 
     public Vector get_reflected_ray(Vector normal, Vector ray);
 
-    public Vector[] get_intersection_point(Point p, Vector u);
+    public Vector get_intersection_point(Point p, Vector u);
 
     public Color get_color();
 

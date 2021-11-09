@@ -97,8 +97,7 @@ public class Camera {
 
             // checking if the reflected ray hits any object
             Vector_Index v_next = get_intersection_point(new Point(vi.v), reflected_ray, vi.index);
-            double _dist = Double.MAX_VALUE;// v_next.v == null ? Double.MAX_VALUE : (new
-                                            // Point(v_next.v)).euclidean_distance(vi.v);
+            double _dist = v_next.v == null ? Double.MAX_VALUE : (new Point(v_next.v)).euclidean_distance(vi.v);
             // System.out.println(_dist + " " + v_next.v + " " + vi.v);
 
             return adjust_brightness(scene.lightSource.get_brightness(p, scene.objects.get(vi.index).get_normal(vi.v),
@@ -123,7 +122,7 @@ public class Camera {
                 // }
                 // if (!set)
                 // frame[height - y - 1][x] = new Color(128, 128, 128);
-                frame[height - y - 1][x] = reflect_ray(0, p, new Vector(focus, p));
+                frame[height - y - 1][x] = reflect_ray(4, p, new Vector(focus, p));
             }
         }
 

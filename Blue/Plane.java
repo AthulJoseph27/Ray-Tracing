@@ -192,7 +192,10 @@ public class Plane implements Callable, Shape {
 
         d.substract(n);
 
-        // System.out.println(ray + " " + normal + " " + d);
+        // System.out.println(normal);
+
+        // System.out.println(Math.toDegrees(Vector.angle_between(ray, normal)) + " "
+        // + Math.toDegrees(Vector.angle_between(d, normal)));
 
         return d;
     }

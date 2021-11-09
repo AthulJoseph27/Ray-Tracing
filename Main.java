@@ -12,7 +12,7 @@ public class Main {
         LightSource lightSource = new AreaLight(200, 200, new Point(-250, 200, 200), 0.0, 0.0, Math.PI, Color.WHITE);
         Scene scene = new Scene();
 
-        Plane pln = new Plane(400, 500, new Point(250, 200, 250), 0.0, 0.0, 0.0, Color.ORANGE);
+        Plane pln = new Plane(200, 250, new Point(-250, 400, 250), 0.0, 0.0, Math.PI, Color.ORANGE);
         scene.add(pln);
         // System.out.println(pln);
 

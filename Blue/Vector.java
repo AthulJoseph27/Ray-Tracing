@@ -33,33 +33,32 @@ public class Vector {
         k = 0;
     }
 
-    public double get_magnitude() {
+    public double getMagnitude() {
         return Math.sqrt(i * i + j * j + k * k);
     }
 
-    public double get_alpha() {
-        return Math.acos(i / get_magnitude());
+    public double getAlpha() {
+        return Math.acos(i / getMagnitude());
     }
 
-    public double get_beta() {
-        return Math.acos(i / get_magnitude());
+    public double getBeta() {
+        return Math.acos(i / getMagnitude());
     }
 
-    public double get_gamma() {
-        return Math.acos(i / get_magnitude());
+    public double getGamma() {
+        return Math.acos(i / getMagnitude());
     }
 
-    public static Vector unit_vector(Vector v) {
-        double magnitude = v.get_magnitude();
+    public static Vector unitVector(Vector v) {
+        double magnitude = v.getMagnitude();
         return new Vector(new Point(), new Point(v.i / magnitude, v.j / magnitude, v.k / magnitude));
     }
 
     public void unit_vector() {
-        double magnitude = get_magnitude();
+        double magnitude = getMagnitude();
         i /= magnitude;
         j /= magnitude;
         k /= magnitude;
-        magnitude = get_magnitude();
     }
 
     public void add(Vector o) {
@@ -74,24 +73,24 @@ public class Vector {
         k -= o.k;
     }
 
-    public double euclidean_distance(Vector o) {
+    public double euclideanDistance(Vector o) {
         return Math.sqrt((i - o.i) * (i - o.i) + (j - o.j) * (j - o.j) + (k - o.k) * (k - o.k));
     }
 
-    public static double dot_product(Vector a, Vector b) {
+    public static double dotProduct(Vector a, Vector b) {
         return a.i * b.i + a.j * b.j + a.k * b.k;
     }
 
-    public static Vector cross_product(Vector a, Vector b) {
+    public static Vector crossProduct(Vector a, Vector b) {
 
         Point p = new Point(a.j * b.k - a.k * b.j, a.i * b.k - a.k * b.i, a.i * b.j - a.j * b.j);
 
         return new Vector(new Point(), p);
     }
 
-    public static double angle_between(Vector a, Vector b) {
-        double dot_pd = Vector.dot_product(a, b);
-        double result = (double) Math.round(dot_pd / (a.get_magnitude() * b.get_magnitude()) * 1000000) / 1000000.0;
+    public static double angleBetween(Vector a, Vector b) {
+        double dot_pd = Vector.dotProduct(a, b);
+        double result = (double) Math.round(dot_pd / (a.getMagnitude() * b.getMagnitude()) * 1000000) / 1000000.0;
         return Math.acos(result);
     }
 
@@ -130,7 +129,7 @@ public class Vector {
 
     }
 
-    public void custom_rotate(double[][] r) {
+    public void customRotate(double[][] r) {
         double new_i = r[0][0] * i + r[0][1] * j + r[0][2] * k;
         double new_j = r[1][0] * i + r[1][1] * j + r[1][2] * k;
         double new_k = r[2][0] * i + r[2][1] * j + r[2][2] * k;

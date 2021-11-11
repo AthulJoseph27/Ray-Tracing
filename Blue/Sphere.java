@@ -26,23 +26,23 @@ public class Sphere implements Solid, Callable {
     }
 
     @Override
-    public boolean is_inside(Point p) {
+    public boolean isInside(Point p) {
         Vector v = new Vector(new Point(), center);
-        double magnitude = v.get_magnitude();
+        double magnitude = v.getMagnitude();
         magnitude *= magnitude;
         return magnitude <= r2;
     }
 
     @Override
-    public boolean is_on_surface(Point p) {
+    public boolean isOnSurface(Point p) {
         Vector v = new Vector(new Point(), center);
-        double magnitude = v.get_magnitude();
+        double magnitude = v.getMagnitude();
         magnitude *= magnitude;
         return magnitude == r2;
     }
 
     @Override
-    public boolean do_intersect(Point p, Vector ray) {
+    public boolean doIntersect(Point p, Vector ray) {
 
         /*
          * A ray passing through point P and direction vector U can be represented as
@@ -60,12 +60,12 @@ public class Sphere implements Solid, Callable {
          * d = b^2 - 4ac ; --> d >= 0
          */
 
-        Vector u = Vector.unit_vector(ray);
+        Vector u = Vector.unitVector(ray);
 
         Vector q = new Vector(center, p);
 
-        double q_magnitude = q.get_magnitude();
-        double b = 2.0 * Vector.dot_product(u, q);
+        double q_magnitude = q.getMagnitude();
+        double b = 2.0 * Vector.dotProduct(u, q);
         double c = q_magnitude * q_magnitude - r2;
 
         double d = (b * b - 4.0 * c); // b^2 - 4ac, here a = 1.0
@@ -86,12 +86,12 @@ public class Sphere implements Solid, Callable {
     }
 
     @Override
-    public Vector get_intersection_point(Point p, Vector ray) {
-        Vector u = Vector.unit_vector(ray);
+    public Vector getIntersectionPoint(Point p, Vector ray) {
+        Vector u = Vector.unitVector(ray);
 
         Vector q = new Vector(center, p);
-        double q_magnitude = q.get_magnitude();
-        double b = 2.0 * Vector.dot_product(u, q);
+        double q_magnitude = q.getMagnitude();
+        double b = 2.0 * Vector.dotProduct(u, q);
         double c = q_magnitude * q_magnitude - r2;
 
         double d = (b * b - 4.0 * c);
@@ -123,23 +123,23 @@ public class Sphere implements Solid, Callable {
         if (x2 < 0)
             return p1;
 
-        if (p.euclidean_distance(p1) < p.euclidean_distance(p2))
+        if (p.euclideanDistance(p1) < p.euclideanDistance(p2))
             return p1;
 
         return p2;
     }
 
     @Override
-    public Vector get_reflected_ray(Vector intersection_point, Vector ray) {
+    public Vector getReflectedRay(Vector intersection_point, Vector ray) {
 
         Vector normal = new Vector(this.center, intersection_point);
 
-        Vector n = Vector.unit_vector(normal);
-        Vector d = Vector.unit_vector(ray);
+        Vector n = Vector.unitVector(normal);
+        Vector d = Vector.unitVector(ray);
 
         // Reflected ray = d - 2*(d.n)n^
 
-        n.scale(2.0 * Vector.dot_product(n, d));
+        n.scale(2.0 * Vector.dotProduct(n, d));
 
         d.substract(n);
 
@@ -147,12 +147,12 @@ public class Sphere implements Solid, Callable {
     }
 
     @Override
-    public Vector get_normal(Vector intersection) {
+    public Vector getNormal(Vector intersection) {
         return new Vector(this.center, intersection);
     }
 
     @Override
-    public Color get_color() {
+    public Color getColor() {
         return this.color;
     }
 
@@ -165,7 +165,7 @@ public class Sphere implements Solid, Callable {
     }
 
     @Override
-    public double get_reflectivity() {
+    public double getReflectivity() {
         return reflectivity;
     }
 

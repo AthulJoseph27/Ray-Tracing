@@ -15,10 +15,10 @@ public class Sun implements Solid, LightSource, Callable {
 
     @Override
     public double get_brightness(Point p, Vector obj_normal, Vector reflected_ray, double distance_to_nearest_object) {
-        if (Vector.angle_between(this.normal, reflected_ray) > (Math.PI / 2.0))
+        if (Vector.angleBetween(this.normal, reflected_ray) > (Math.PI / 2.0))
             return 0.0;
 
-        double angle = Vector.angle_between(obj_normal, reflected_ray);
+        double angle = Vector.angleBetween(obj_normal, reflected_ray);
 
         if (distance_to_nearest_object != Double.MAX_VALUE)
             return 0.0;
@@ -30,37 +30,37 @@ public class Sun implements Solid, LightSource, Callable {
     }
 
     @Override
-    public boolean is_inside(Point p) {
+    public boolean isInside(Point p) {
         return false;
     }
 
     @Override
-    public boolean is_on_surface(Point p) {
+    public boolean isOnSurface(Point p) {
         return false;
     }
 
     @Override
-    public boolean do_intersect(Point point_on_screen, Vector ray) {
+    public boolean doIntersect(Point point_on_screen, Vector ray) {
         return true;
     }
 
     @Override
-    public Vector get_normal(Vector intersection) {
+    public Vector getNormal(Vector intersection) {
         return normal;
     }
 
     @Override
-    public Vector get_reflected_ray(Vector intersection_point, Vector ray) {
+    public Vector getReflectedRay(Vector intersection_point, Vector ray) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector get_intersection_point(Point p, Vector u) {
+    public Vector getIntersectionPoint(Point p, Vector u) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Color get_color() {
+    public Color getColor() {
         return this.color;
     }
 
@@ -72,7 +72,7 @@ public class Sun implements Solid, LightSource, Callable {
     }
 
     @Override
-    public double get_reflectivity() {
+    public double getReflectivity() {
         throw new UnsupportedOperationException();
     }
 

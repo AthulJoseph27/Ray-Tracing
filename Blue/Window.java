@@ -23,7 +23,7 @@ public class Window extends JFrame {
         // this.getContentPane().setBackground(Color.BLACK);
     }
 
-    public void update_frame(Color[][] frame) {
-        screen.update_frame(frame);
+    public void updateFrame(Color[][] frame) {
+        screen.updateFrame(frame);
     }
 }

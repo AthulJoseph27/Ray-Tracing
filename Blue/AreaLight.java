@@ -11,7 +11,7 @@ public class AreaLight extends Plane implements LightSource {
 
     @Override
     public double get_brightness(Point p, Vector normal, Vector reflected_ray, double distance_to_nearest_object) {
-        Vector intersection = get_intersection_point(p, reflected_ray);
+        Vector intersection = getIntersectionPoint(p, reflected_ray);
 
         if (intersection == null)
             return 0.0;
@@ -19,10 +19,10 @@ public class AreaLight extends Plane implements LightSource {
         // System.out.println(p.euclidean_distance(intersection) + " " +
         // distance_to_nearest_object);
 
-        if (p.euclidean_distance(intersection) > distance_to_nearest_object)
+        if (p.euclideanDistance(intersection) > distance_to_nearest_object)
             return 0.0;
 
-        double angle = Vector.angle_between(normal, reflected_ray);
+        double angle = Vector.angleBetween(normal, reflected_ray);
 
         if (angle >= (Math.PI / 2.0))
             return 0.0;
@@ -31,7 +31,7 @@ public class AreaLight extends Plane implements LightSource {
     }
 
     @Override
-    public Vector get_reflected_ray(Vector normal, Vector ray) {
+    public Vector getReflectedRay(Vector normal, Vector ray) {
         throw new UnsupportedOperationException();
     }
 

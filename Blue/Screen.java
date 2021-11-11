@@ -27,7 +27,7 @@ public class Screen extends JPanel {
         repaint();
     }
 
-    public void update_frame(Color[][] frame) {
+    public void updateFrame(Color[][] frame) {
         for (int x = 0; x < canvas.getWidth(); x++) {
             for (int y = 0; y < canvas.getHeight(); y++) {
                 canvas.setRGB(x, y, frame[y][x].getRGB());

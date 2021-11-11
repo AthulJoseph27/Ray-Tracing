@@ -59,7 +59,7 @@ public class Plane implements Callable, Solid {
         ref_point_orginal = ref_point.copy();
         ref_dir = new Vector(center, ref_point);
         this.ref_dir.unit_vector();
-        this.normal = Vector.unit_vector(normal);
+        this.normal = Vector.unitVector(normal);
         this.color = color;
     }
 
@@ -125,7 +125,7 @@ public class Plane implements Callable, Solid {
 
     }
 
-    public void update_orientation(double rx, double ry, double rz) {
+    public void updateOrientation(double rx, double ry, double rz) {
         this.rx = rx;
         this.ry = ry;
         this.rz = rz;
@@ -143,7 +143,7 @@ public class Plane implements Callable, Solid {
         this.ref_dir.unit_vector();
     }
 
-    private void update_center(Point new_center) {
+    private void updateCenter(Point new_center) {
         center_orginal = new_center;
         Vector temp = new Vector(new Point(), new_center);
         temp.rotateX(rx);
@@ -160,7 +160,7 @@ public class Plane implements Callable, Solid {
         this.ref_dir.unit_vector();
     }
 
-    public Point transform_coordinate(Point point) {
+    public Point transformCoordinate(Point point) {
 
         Vector v = new Vector(new Point(), new Point(point.x, point.y, point.z));
 
@@ -174,18 +174,18 @@ public class Plane implements Callable, Solid {
     }
 
     @Override
-    public boolean is_inside(Point p) {
+    public boolean isInside(Point p) {
         return false;
     }
 
     @Override
-    public boolean is_on_surface(Point p) {
+    public boolean isOnSurface(Point p) {
         return false;
     }
 
     @Override
-    public boolean do_intersect(Point point, Vector dir) {
-        Vector intersection = get_intersection_point(point, dir);
+    public boolean doIntersect(Point point, Vector dir) {
+        Vector intersection = getIntersectionPoint(point, dir);
 
         if (intersection == null)
             return false;
@@ -201,18 +201,18 @@ public class Plane implements Callable, Solid {
     }
 
     @Override
-    public Vector get_reflected_ray(Vector intersection_point, Vector ray) {
+    public Vector getReflectedRay(Vector intersection_point, Vector ray) {
 
         // d = d - (2*d.n)n
 
         if (intersection_point == null)
             return ray;
 
-        Vector d = Vector.unit_vector(ray);
+        Vector d = Vector.unitVector(ray);
 
-        Vector n = Vector.unit_vector(normal);
+        Vector n = Vector.unitVector(normal);
 
-        n.scale(2.0 * Vector.dot_product(d, n));
+        n.scale(2.0 * Vector.dotProduct(d, n));
 
         d.substract(n);
 
@@ -225,7 +225,7 @@ public class Plane implements Callable, Solid {
     }
 
     @Override
-    public Vector get_intersection_point(Point p, Vector u) {
+    public Vector getIntersectionPoint(Point p, Vector u) {
 
         /*
          * Vector passing through p and direction u => V = p + t*u; CV.N = 0
@@ -239,9 +239,9 @@ public class Plane implements Callable, Solid {
         u.unit_vector();
 
         Vector c = new Vector(new Point(), center);
-        double R = Vector.dot_product(normal, c);
-        double Q = Vector.dot_product(normal, new Vector(new Point(), p));
-        double S = Vector.dot_product(normal, u);
+        double R = Vector.dotProduct(normal, c);
+        double Q = Vector.dotProduct(normal, new Vector(new Point(), p));
+        double S = Vector.dotProduct(normal, u);
 
         if (S == 0) {
             u = u_temp;
@@ -259,9 +259,9 @@ public class Plane implements Callable, Solid {
         intersection.add(new Vector(new Point(), p));
 
         Vector temp = new Vector(center, intersection);
-        double angle = Vector.angle_between(ref_dir, temp);
+        double angle = Vector.angleBetween(ref_dir, temp);
 
-        double dist = temp.get_magnitude();
+        double dist = temp.getMagnitude();
 
         double _width = Math.abs(dist * Math.cos(angle));
         double _height = Math.abs(dist * Math.sin(angle));
@@ -276,27 +276,27 @@ public class Plane implements Callable, Solid {
     }
 
     @Override
-    public Color get_color() {
+    public Color getColor() {
         return this.color;
     }
 
     @Override
     public void transform(Point p, String type) {
         if (type.compareTo("center") == 0) {
-            update_center(p);
+            updateCenter(p);
             // System.out.println("Center: " + center);
         } else if (type.compareTo("rotation") == 0) {
-            update_orientation(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
+            updateOrientation(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
         }
     }
 
     @Override
-    public Vector get_normal(Vector intersection) {
+    public Vector getNormal(Vector intersection) {
         return this.normal;
     }
 
     @Override
-    public double get_reflectivity() {
+    public double getReflectivity() {
         return this.reflectivity;
     }
 

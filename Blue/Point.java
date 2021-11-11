@@ -21,11 +21,11 @@ public class Point {
         this.z = v.k;
     }
 
-    public double euclidean_distance(Point o) {
+    public double euclideanDistance(Point o) {
         return Math.sqrt((x - o.x) * (x - o.x) + (y - o.y) * (y - o.y) + (z - o.z) * (z - o.z));
     }
 
-    public double euclidean_distance(Vector o) {
+    public double euclideanDistance(Vector o) {
         return Math.sqrt((x - o.i) * (x - o.i) + (y - o.j) * (y - o.j) + (z - o.k) * (z - o.k));
     }
 
@@ -33,7 +33,7 @@ public class Point {
         return new Point(x, y, z);
     }
 
-    public static Vector get_closest_point(Point p, Vector[] intersections) {
+    public static Vector getClosestPoint(Point p, Vector[] intersections) {
         if (intersections == null)
             return null;
 
@@ -44,7 +44,7 @@ public class Point {
             if (v == null) {
                 continue;
             }
-            double _temp = p.euclidean_distance(v);
+            double _temp = p.euclideanDistance(v);
             if (result == null || (_temp < dist)) {
                 dist = _temp;
                 result = v;

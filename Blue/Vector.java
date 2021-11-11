@@ -149,6 +149,10 @@ public class Vector {
         return new Vector(new Point(), new Point(i, j, k));
     }
 
+    public boolean equalsTo(Vector o) {
+        return (this.i == o.i) && (this.j == o.j) && (this.k == o.k);
+    }
+
     @Override
     public String toString() {
         String sign_i = i < 0 ? "-" : "";

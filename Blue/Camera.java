@@ -2,7 +2,7 @@ package Blue;
 
 import java.awt.*;
 
-public class Camera {
+public class Camera implements Callable {
 
     Scene scene;
     Point focus;
@@ -26,7 +26,7 @@ public class Camera {
         this.height = height;
         this.scene = scene;
         this.focal_length = focal_length;
-        plane = new Plane(width, height);
+        plane = new Plane(width, height, -1);
         focus = get_focus();
         frame = new Color[height][width];
         clear_frame();
@@ -38,13 +38,13 @@ public class Camera {
 
     private Point get_focus() {
 
-        Point _center = plane.transform_coordinate(new Point(width / 2.0, 0, height / 2.0));
-
+        // Point _center = plane.transform_coordinate(new Point(width / 2.0, 0, height /
+        // 2.0));
         Vector normal = plane.normal.copy();
         normal.unit_vector();
         normal.scale(focal_length * -1);
 
-        Point f = new Point(_center.x + normal.i, _center.y + normal.j, _center.z + normal.k);
+        Point f = new Point(plane.center.x + normal.i, plane.center.y + normal.j, plane.center.z + normal.k);
 
         return f;
     }
@@ -82,6 +82,16 @@ public class Camera {
         return new Vector_Index(intersection_point, index);
     }
 
+    private Color blendColor(Color c1, Color c2, double r1, double r2) {
+        double r = r1 + r2;
+
+        double R = c1.getRed() * r1 / r + c2.getRed() * r2 / r;
+        double G = c1.getGreen() * r1 / r + c2.getGreen() * r2 / r;
+        double B = c1.getBlue() * r1 / r + c2.getBlue() * r2 / r;
+
+        return new Color((int) R, (int) G, (int) B, 255);
+    }
+
     private Color reflect_ray(int depth, Point p, Vector ray) {
 
         Vector u = Vector.unit_vector(ray);
@@ -92,20 +102,44 @@ public class Camera {
             return new Color(0);
 
         Vector reflected_ray = scene.objects.get(vi.index).get_reflected_ray(vi.v, u);
+        reflected_ray.unit_vector();
+
+        Vector_Index v_next = get_intersection_point(new Point(vi.v), reflected_ray, vi.index);
+
+        Solid cur_obj = scene.objects.get(vi.index);
+
+        if (v_next.v == null) {
+            return adjust_brightness(scene.lightSource.get_brightness(new Point(vi.v), cur_obj.get_normal(vi.v),
+                    reflected_ray, Double.MAX_VALUE), cur_obj.get_color());
+        }
+
+        // TODO: Have to check if the ray hits light before any other object!!
 
         if (depth == 0) {
 
             // checking if the reflected ray hits any object
-            Vector_Index v_next = get_intersection_point(new Point(vi.v), reflected_ray, vi.index);
             double _dist = v_next.v == null ? Double.MAX_VALUE : (new Point(v_next.v)).euclidean_distance(vi.v);
-            // System.out.println(_dist + " " + v_next.v + " " + vi.v);
-
-            return adjust_brightness(scene.lightSource.get_brightness(p, scene.objects.get(vi.index).get_normal(vi.v),
-                    reflected_ray, _dist), scene.objects.get(vi.index).get_color());
+            // if (v_next.v != null && vi.v.i > 220) {
+            // System.out.println("\n" + vi.v + " " + v_next.v);
+            // assert (Vector.angle_between(reflected_ray, new Vector(vi.v, v_next.v)) ==
+            // 0);
+            // System.out.println(_dist + " from : " +
+            // scene.objects.get(vi.index).getClass() + " to: "
+            // + scene.objects.get(v_next.index).getClass());
+            // }
+            return adjust_brightness(scene.lightSource.get_brightness(new Point(vi.v),
+                    scene.objects.get(vi.index).get_normal(vi.v), reflected_ray, _dist),
+                    scene.objects.get(vi.index).get_color());
         }
 
-        return reflect_ray(depth - 1, new Point(vi.v), reflected_ray);
+        Color c = reflect_ray(depth - 1, new Point(vi.v), reflected_ray);
 
+        if (c.getRGB() == 0)
+            return c;
+
+        Solid other_obj = scene.objects.get(v_next.index);
+
+        return blendColor(c, cur_obj.get_color(), other_obj.get_reflectivity(), cur_obj.get_reflectivity());
     }
 
     public Color[][] get_frame() {
@@ -113,20 +147,19 @@ public class Camera {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Point p = plane.transform_coordinate(new Point(x, 0, y));
-                // boolean set = false;
-                // for (Shape obj : scene.objects) {
-                // if (obj.do_intersect(p, new Vector(focus, p))) {
-                // frame[height - y - 1][x] = obj.get_color();
-                // set = true;
-                // }
-                // }
-                // if (!set)
-                // frame[height - y - 1][x] = new Color(128, 128, 128);
-                frame[height - y - 1][x] = reflect_ray(4, p, new Vector(focus, p));
+                frame[height - y - 1][x] = reflect_ray(5, p, new Vector(focus, p));
             }
         }
 
         return frame;
+    }
+
+    @Override
+    public void transform(Point p, String type) {
+        this.plane.transform(p, type);
+        this.focus = get_focus();
+        // System.out.println(focus);
+
     }
 
     @Override

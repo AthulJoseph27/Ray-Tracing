@@ -2,7 +2,7 @@ package Blue;
 
 import java.awt.*;
 
-interface Shape {
+interface Solid {
 
     public boolean is_inside(Point p);
 
@@ -12,10 +12,12 @@ interface Shape {
 
     public Vector get_normal(Vector intersection);
 
-    public Vector get_reflected_ray(Vector normal, Vector ray);
+    public Vector get_reflected_ray(Vector intersection_point, Vector ray);
 
     public Vector get_intersection_point(Point p, Vector u);
 
     public Color get_color();
+
+    public double get_reflectivity();
 
 }

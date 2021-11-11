@@ -108,7 +108,7 @@ public class SliderXYZ implements ChangeListener {
         labelX.setText("X = " + x);
         labelY.setText("Y = " + y);
         labelZ.setText("Z = " + z);
-        update_function.call(new Point(x, y, z), parm_name);
+        update_function.transform(new Point(x, y, z), parm_name);
     }
 
 }

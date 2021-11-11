@@ -2,24 +2,27 @@ package Blue;
 
 import java.awt.*;
 
-public class Sphere implements Shape, Callable {
+public class Sphere implements Solid, Callable {
 
     public double radius, r2;
     public Point center;
     public Color color;
+    public double reflectivity = 1.0;
 
-    public Sphere(double radius, Point center) {
+    public Sphere(double radius, Point center, double reflectivity) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
+        this.reflectivity = reflectivity;
         color = new Color(0xFFFFFF);
     }
 
-    public Sphere(double radius, Point center, Color color) {
+    public Sphere(double radius, Point center, Color color, double reflectivity) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
         this.color = color;
+        this.reflectivity = reflectivity;
     }
 
     @Override
@@ -105,16 +108,25 @@ public class Sphere implements Shape, Callable {
             return null;
         }
 
-        double x = Math.min(x1, x2);
-
-        Vector pi = new Vector(new Point(), p);
+        Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
 
         Vector t = u.copy();
-        t.scale(x);
+        t.scale(x1);
+        p1.add(t);
 
-        pi.add(t);
+        t = u.copy();
+        t.scale(x2);
+        p2.add(t);
 
-        return pi;
+        if (x1 < 0)
+            return p2;
+        if (x2 < 0)
+            return p1;
+
+        if (p.euclidean_distance(p1) < p.euclidean_distance(p2))
+            return p1;
+
+        return p2;
     }
 
     @Override
@@ -145,11 +157,16 @@ public class Sphere implements Shape, Callable {
     }
 
     @Override
-    public void call(Point p, String type) {
+    public void transform(Point p, String type) {
         if (type.compareTo("center") == 0) {
             this.center = p;
         }
 
+    }
+
+    @Override
+    public double get_reflectivity() {
+        return reflectivity;
     }
 
     @Override

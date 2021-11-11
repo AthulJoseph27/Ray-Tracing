@@ -2,20 +2,22 @@ package Blue;
 
 import java.awt.Color;
 
-public class Plane implements Callable, Shape {
+public class Plane implements Callable, Solid {
 
     public int width, height;
     public double rx, ry, rz;
+    public double reflectivity = 1.0;
     public Point center, ref_point, center_orginal, ref_point_orginal;
     public Vector normal, ref_dir;
     public Color color;
 
-    public Plane(int width, int height) {
+    public Plane(int width, int height, double reflectivity) {
         this.width = width;
         this.height = height;
         rx = 0;
         ry = 0;
         rz = 0;
+        this.reflectivity = reflectivity;
         normal = new Vector(new Point(), new Point(0, 1, 0));
         center = new Point(width / 2.0, 0, height / 2.0);
         center_orginal = center.copy();
@@ -26,12 +28,13 @@ public class Plane implements Callable, Shape {
         color = new Color(255, 255, 255, 255);
     }
 
-    public Plane(int width, int height, Color color) {
+    public Plane(int width, int height, Color color, double reflectivity) {
         this.width = width;
         this.height = height;
         rx = 0;
         ry = 0;
         rz = 0;
+        this.reflectivity = reflectivity;
         center = new Point(width / 2.0, 0, height / 2.0);
         center_orginal = center.copy();
         ref_point = new Point(width / 2.0, 0, 0);
@@ -43,12 +46,13 @@ public class Plane implements Callable, Shape {
         this.color = color;
     }
 
-    public Plane(int width, int height, Point center, Color color) {
+    public Plane(int width, int height, Point center, Color color, double reflectivity) {
         this.width = width;
         this.height = height;
         rx = 0;
         ry = 0;
         rz = 0;
+        this.reflectivity = reflectivity;
         this.center = center;
         center_orginal = center.copy();
         ref_point = new Point(center.x, 0, 0);
@@ -59,19 +63,20 @@ public class Plane implements Callable, Shape {
         this.color = color;
     }
 
-    public Plane(int width, int height, double rx, double ry, double rz, Color color) {
+    public Plane(int width, int height, double rx, double ry, double rz, Color color, double reflectivity) {
         this.width = width;
         this.height = height;
         this.rx = rx;
         this.ry = ry;
         this.rz = rz;
+        this.reflectivity = reflectivity;
         this.color = new Color(255, 255, 255, 255);
-        center_orginal = center.copy();
         normal = new Vector(new Point(), new Point(0, 1, 0));
         normal.rotateX(rx);
         normal.rotateY(ry);
         normal.rotateZ(rz);
         this.center = new Point(width / 2.0, 0, height / 2.0);
+        center_orginal = center.copy();
         Vector temp = new Vector(new Point(), center);
         temp.rotateX(rx);
         temp.rotateY(ry);
@@ -89,12 +94,14 @@ public class Plane implements Callable, Shape {
 
     }
 
-    public Plane(int width, int height, Point center, double rx, double ry, double rz, Color color) {
+    public Plane(int width, int height, Point center, double rx, double ry, double rz, Color color,
+            double reflectivity) {
         this.width = width;
         this.height = height;
         this.rx = rx;
         this.ry = ry;
         this.rz = rz;
+        this.reflectivity = reflectivity;
         this.color = new Color(255, 255, 255, 255);
         normal = new Vector(new Point(), new Point(0, 1, 0));
         normal.rotateX(rx);
@@ -128,6 +135,23 @@ public class Plane implements Callable, Shape {
         temp.rotateZ(rz);
         this.center = new Point(temp.i, temp.j, temp.k);
         temp = new Vector(new Point(), ref_point_orginal);
+        temp.rotateX(rx);
+        temp.rotateY(ry);
+        temp.rotateZ(rz);
+        this.ref_point = new Point(temp.i, temp.j, temp.k);
+        this.ref_dir = new Vector(this.center, ref_point);
+        this.ref_dir.unit_vector();
+    }
+
+    private void update_center(Point new_center) {
+        center_orginal = new_center;
+        Vector temp = new Vector(new Point(), new_center);
+        temp.rotateX(rx);
+        temp.rotateY(ry);
+        temp.rotateZ(rz);
+        this.center = new Point(temp.i, temp.j, temp.k);
+        temp = new Vector(new Point(), new Point(new_center.x, new_center.y, new_center.z - height / 2.0));
+        this.ref_point_orginal = new Point(temp.i, temp.j, temp.k);
         temp.rotateX(rx);
         temp.rotateY(ry);
         temp.rotateZ(rz);
@@ -226,6 +250,9 @@ public class Plane implements Callable, Shape {
 
         double t = (R - Q) / S;
 
+        if (t < 0)
+            return null;
+
         Vector intersection = u.copy();
 
         intersection.scale(t);
@@ -254,9 +281,10 @@ public class Plane implements Callable, Shape {
     }
 
     @Override
-    public void call(Point p, String type) {
+    public void transform(Point p, String type) {
         if (type.compareTo("center") == 0) {
-            this.center = p;
+            update_center(p);
+            // System.out.println("Center: " + center);
         } else if (type.compareTo("rotation") == 0) {
             update_orientation(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
         }
@@ -265,6 +293,11 @@ public class Plane implements Callable, Shape {
     @Override
     public Vector get_normal(Vector intersection) {
         return this.normal;
+    }
+
+    @Override
+    public double get_reflectivity() {
+        return this.reflectivity;
     }
 
     @Override

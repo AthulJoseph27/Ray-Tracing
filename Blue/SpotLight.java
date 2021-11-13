@@ -16,7 +16,8 @@ public class SpotLight extends Sphere implements LightSource {
     }
 
     @Override
-    public double get_brightness(Point p, Vector obj_normal, Vector reflected_ray, double distance_to_nearest_object) {
+    public double getDiffuseBrightness(Point p, Vector obj_normal, Vector reflected_ray,
+            double distance_to_nearest_object) {
         Vector intersection = getIntersectionPoint(p, reflected_ray);
         // System.out.println(p + " " + reflected_ray);
         if (intersection == null)
@@ -30,6 +31,12 @@ public class SpotLight extends Sphere implements LightSource {
             return 0.0;
 
         return 1.0 - angle / (Math.PI / 2.0);
+    }
+
+    @Override
+    public double getSpecularBrightness(Vector reflected_ray, double distance_to_nearest_object) {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     @Override

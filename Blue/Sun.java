@@ -14,8 +14,12 @@ public class Sun implements Solid, LightSource, Callable {
     }
 
     @Override
-    public double get_brightness(Point p, Vector obj_normal, Vector reflected_ray, double distance_to_nearest_object) {
-        if (Vector.angleBetween(this.normal, reflected_ray) > (Math.PI / 2.0))
+    public double getDiffuseBrightness(Point p, Vector obj_normal, Vector reflected_ray,
+            double distance_to_nearest_object) {
+
+        // System.out.println(Math.toDegrees(Vector.angleBetween(this.normal,
+        // reflected_ray)));
+        if (Vector.angleBetween(this.normal, reflected_ray) < (Math.PI / 2.0))
             return 0.0;
 
         double angle = Vector.angleBetween(obj_normal, reflected_ray);
@@ -26,7 +30,31 @@ public class Sun implements Solid, LightSource, Callable {
         if (angle >= (Math.PI / 2.0))
             return 0.0;
 
-        return 1.0 - angle / (Math.PI / 2.0);
+        double factor = 1.0 - angle / (Math.PI / 2.0);
+
+        return factor;
+        // factor *= brightness;
+
+        // // Specular Reflections
+
+        // factor += (1.0 - Vector.angleBetween(normal, reflected_ray) / Math.PI) /
+        // 10.0;
+
+        // return Math.min(factor, 1.0);
+    }
+
+    @Override
+    public double getSpecularBrightness(Vector reflected_ray, double distance_to_nearest_object) {
+        if (distance_to_nearest_object != Double.MAX_VALUE)
+            return 0.0;
+
+        double angle = Vector.angleBetween(this.normal, reflected_ray);
+        if (angle <= (Math.PI / 2.0))
+            return 0;
+
+        angle = Math.PI - angle;
+
+        return 1 - angle / (Math.PI / 2.0);
     }
 
     @Override

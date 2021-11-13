@@ -67,8 +67,10 @@ public class Camera implements Callable {
     }
 
     private Color adjustBrightness(double scale, Color color) {
-        return new Color((int) (color.getRed() * scale), (int) (color.getGreen() * scale),
-                (int) (color.getBlue() * scale), 255);
+        int R = (int) Math.min((color.getRed() * scale), 255);
+        int G = (int) Math.min((color.getGreen() * scale), 255);
+        int B = (int) Math.min((color.getBlue() * scale), 255);
+        return new Color(R, G, B, 255);
     }
 
     private VectorIndex getIntersectionPoint(Point p, Vector u, int skipindex) {
@@ -101,6 +103,19 @@ public class Camera implements Callable {
         return new Color((int) R, (int) G, (int) B, 255);
     }
 
+    private double lerp(double a, double b, double t) {
+        return a + (b - a) * t;
+    }
+
+    private Color lerp(Color c1, Color c2, double t) {
+        int R = (int) lerp(c1.getRed(), c2.getRed(), t);
+        int G = (int) lerp(c1.getGreen(), c2.getGreen(), t);
+        int B = (int) lerp(c1.getBlue(), c2.getBlue(), t);
+
+        return new Color(R, G, B, 255);
+
+    }
+
     private Color reflectRay(int depth, Point p, Vector ray) {
 
         Vector u = Vector.unitVector(ray);
@@ -118,8 +133,11 @@ public class Camera implements Callable {
         Solid curObj = scene.objects.get(vi.index);
 
         if (vNext.v == null) {
-            return adjustBrightness(scene.lightSource.get_brightness(new Point(vi.v), curObj.getNormal(vi.v),
-                    reflectedRay, Double.MAX_VALUE), curObj.getColor());
+            // return curObj.getColor();
+            double factor = scene.lightSource.getDiffuseBrightness(new Point(vi.v), curObj.getNormal(vi.v),
+                    reflectedRay, Double.MAX_VALUE);
+            factor = Math.max(factor, 0.1) + scene.lightSource.getSpecularBrightness(reflectedRay, Double.MAX_VALUE);
+            return adjustBrightness(factor, curObj.getColor());
         }
 
         // TODO: Have to check if the ray hits light before any other object!!
@@ -128,17 +146,12 @@ public class Camera implements Callable {
 
             // checking if the reflected ray hits any object
             double _dist = vNext.v == null ? Double.MAX_VALUE : (new Point(vNext.v)).euclideanDistance(vi.v);
-            // if (v_next.v != null && vi.v.i > 220) {
-            // System.out.println("\n" + vi.v + " " + v_next.v);
-            // assert (Vector.angle_between(reflectedray, new Vector(vi.v, v_next.v)) ==
-            // 0);
-            // System.out.println(_dist + " from : " +
-            // scene.objects.get(vi.index).getClass() + " to: "
-            // + scene.objects.get(v_next.index).getClass());
-            // }
-            return adjustBrightness(scene.lightSource.get_brightness(new Point(vi.v),
-                    scene.objects.get(vi.index).getNormal(vi.v), reflectedRay, _dist),
-                    scene.objects.get(vi.index).getColor());
+
+            double factor = scene.lightSource.getDiffuseBrightness(new Point(vi.v),
+                    scene.objects.get(vi.index).getNormal(vi.v), reflectedRay, _dist);
+            factor = Math.max(factor, 0.1) * curObj.getReflectivity()
+                    + scene.lightSource.getSpecularBrightness(reflectedRay, _dist);
+            return adjustBrightness(factor, scene.objects.get(vi.index).getColor());
         }
 
         Color c = reflectRay(depth - 1, new Point(vi.v), reflectedRay);
@@ -146,9 +159,9 @@ public class Camera implements Callable {
         if (c.getRGB() == 0)
             return c;
 
-        Solid otherObj = scene.objects.get(vNext.index);
+        // return blendColor(c, curObj.getColor(), 1.0, curObj.getReflectivity());
 
-        return blendColor(c, curObj.getColor(), 1.0, curObj.getReflectivity());
+        return lerp(c, curObj.getColor(), curObj.getReflectivity());
     }
 
     public Color[][] getFrame() {
@@ -156,7 +169,7 @@ public class Camera implements Callable {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Point p = plane.transformCoordinate(new Point(x, 0, y));
-                frame[height - y - 1][x] = reflectRay(3, p, new Vector(focus, p));
+                frame[height - y - 1][x] = reflectRay(10, p, new Vector(focus, p));
             }
         }
 

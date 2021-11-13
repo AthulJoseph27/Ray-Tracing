@@ -14,32 +14,33 @@ public class Main {
         // LightSource lightSource = new SpotLight(new Point(), 100, 1);
         // LightSource lightSource = new SpotLight(new Point(-1000, -1000, -1000), 1700,
         // 1);
-        LightSource lightSource = new Sun(new Point());
+        LightSource lightSource = new Sun(new Point(1, 1, -1));
 
         Scene scene = new Scene(lightSource);
 
-        Plane pln = new Plane(450, 450, new Point(250, -1000, -250), Math.PI, 0.0, 0.0, new Color(205, 205, 205), 0.5);
+        Plane pln = new Plane(3000, 500, new Point(260, 60, 180), Math.toRadians(105), 0.0, 0.0,
+                new Color(129, 47, 255), 0.1);
         scene.add(pln);
 
         // System.out.println(pln);
         // System.exit(0);
-        scene.add(new Sphere(60, new Point(100, 400, 250), new Color(0, 255, 196), 0.01));
-        scene.add(new Sphere(60, new Point(100, 400, 120), new Color(196, 0, 255), 0.01));
-        scene.add(new Sphere(60, new Point(100, 400, 380), new Color(255, 0, 59), 0.01));
+        scene.add(new Sphere(50, new Point(100, 600, 400), new Color(255, 73, 138), 0.01));
+        scene.add(new Sphere(50, new Point(120, 450, 300), new Color(255, 69, 0), 0.1));
+        scene.add(new Sphere(50, new Point(140, 300, 200), new Color(255, 236, 73), 0.03));
 
-        scene.add(new Sphere(60, new Point(240, 400, 250), new Color(255, 69, 0), 0.01));
-        scene.add(new Sphere(60, new Point(240, 400, 120), new Color(255, 196, 0), 0.01));
-        scene.add(new Sphere(60, new Point(240, 400, 380), new Color(0, 59, 255), 0.01));
+        scene.add(new Sphere(50, new Point(240, 600, 400), new Color(0, 255, 196), 0.21));
+        scene.add(new Sphere(50, new Point(255, 450, 300), new Color(73, 92, 255), 0.31));
+        scene.add(new Sphere(50, new Point(270, 300, 200), new Color(0, 186, 255), 0.1));
 
-        scene.add(new Sphere(60, new Point(380, 400, 250), new Color(133, 0, 255), 0.01));
-        scene.add(new Sphere(60, new Point(380, 400, 120), new Color(0, 186, 255), 0.01));
-        scene.add(new Sphere(60, new Point(380, 400, 380), new Color(0, 255, 69), 0.01));
+        scene.add(new Sphere(50, new Point(380, 600, 400), new Color(255, 208, 210), 0.11));
+        scene.add(new Sphere(50, new Point(390, 450, 300), new Color(196, 0, 255), 0.051));
+        scene.add(new Sphere(50, new Point(400, 300, 200), new Color(255, 0, 59), 0.01));
 
         Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
 
         Window window = new Window(WIDTH, HEIGHT);
-        new SliderXYZ(cam, "Rotation", 0, 360, 0, "rotation");
-        new SliderXYZ(cam, "Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000), new Point(0, 0, 0),
+        new SliderXYZ(pln, "Rotation", 0, 360, 0, "rotation");
+        new SliderXYZ(pln, "Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000), new Point(0, 0, 0),
                 "center");
 
         // new SliderXYZ((Callable) scene.lightSource, "Location", new Point(-1000,

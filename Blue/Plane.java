@@ -148,6 +148,11 @@ public class Plane implements Callable, Solid {
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
         this.ref_dir.unit_vector();
+        normal = new Vector(new Point(), new Point(0, 1, 0));
+        normal.rotateX(rx);
+        normal.rotateY(ry);
+        normal.rotateZ(rz);
+
     }
 
     private void updateCenter(Point new_center) {
@@ -300,6 +305,8 @@ public class Plane implements Callable, Solid {
             // System.out.println("Center: " + center);
         } else if (type.compareTo("rotation") == 0) {
             updateOrientation(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
+            // System.out.println(p);
+            // System.out.println(normal);
         }
     }
 

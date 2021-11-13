@@ -125,6 +125,13 @@ public class Plane implements Callable, Solid {
 
     }
 
+    public Plane(int width, int height, Point center, Vector normal) {
+        this.width = width;
+        this.height = height;
+        this.center = center;
+        this.normal = normal;
+    }
+
     public void updateOrientation(double rx, double ry, double rz) {
         this.rx = rx;
         this.ry = ry;
@@ -158,6 +165,12 @@ public class Plane implements Callable, Solid {
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
         this.ref_dir.unit_vector();
+    }
+
+    public void updateEulerAngles() {
+        rx = Vector.angleBetween(new Vector(new Point(), new Point(1, 0, 0)), normal);
+        ry = Vector.angleBetween(new Vector(new Point(), new Point(0, 1, 0)), normal);
+        rz = Vector.angleBetween(new Vector(new Point(), new Point(0, 0, 1)), normal);
     }
 
     public Point transformCoordinate(Point point) {

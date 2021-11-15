@@ -8,7 +8,7 @@ Ray tracing is a method of graphics rendering that simulates the physical behavi
 
 You can alter the scene rendered by changing the objects and its location in the Main.java file.
 
-<image src="assets/53.png" width="250"/>  <image src="assets/56.png" width="250"/>
+<image src="assets/42.png" width="220"/> <image src="assets/53.png" width="220"/>  <image src="assets/56.png" width="220"/>
 
 ## Getting Started
 

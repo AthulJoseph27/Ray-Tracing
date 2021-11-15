@@ -1,6 +1,10 @@
 import java.awt.Color;
 import java.io.*;
-import Blue.*;
+import Blue.GUI.*;
+import Blue.Geometry.Point;
+import Blue.Light.*;
+import Blue.Render.*;
+import Blue.Solids.*;
 
 public class Main {
 
@@ -14,12 +18,12 @@ public class Main {
         // LightSource lightSource = new SpotLight(new Point(), 100, 1);
         // LightSource lightSource = new SpotLight(new Point(-1000, -1000, -1000), 1700,
         // 1);
-        LightSource lightSource = new Sun(new Point(1, 1, -1));
+        LightSource lightSource = new Sun(new Point(-1, 1, -1));
 
         Scene scene = new Scene(lightSource);
 
         Plane pln = new Plane(3000, 500, new Point(260, 60, 180), Math.toRadians(105), 0.0, 0.0,
-                new Color(129, 47, 255), 0.1);
+                new Color(129, 47, 255), 0.01);
         scene.add(pln);
 
         // System.out.println(pln);

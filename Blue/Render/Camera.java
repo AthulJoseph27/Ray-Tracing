@@ -1,6 +1,12 @@
-package Blue;
+package Blue.Render;
 
 import java.awt.*;
+
+import Blue.GUI.Callable;
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
+import Blue.Solids.Plane;
+import Blue.Solids.Solid;
 
 public class Camera implements Callable {
 
@@ -169,7 +175,7 @@ public class Camera implements Callable {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Point p = plane.transformCoordinate(new Point(x, 0, y));
-                frame[height - y - 1][x] = reflectRay(10, p, new Vector(focus, p));
+                frame[height - y - 1][x] = reflectRay(5, p, new Vector(focus, p));
             }
         }
 

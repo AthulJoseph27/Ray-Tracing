@@ -1,7 +1,12 @@
-package Blue;
+package Blue.Render;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import Blue.Geometry.Point;
+import Blue.Light.LightSource;
+import Blue.Light.SpotLight;
+import Blue.Solids.Solid;
 
 public class Scene {
 

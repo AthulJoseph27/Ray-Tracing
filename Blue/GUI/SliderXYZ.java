@@ -1,9 +1,11 @@
-package Blue;
+package Blue.GUI;
 
 import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
+
+import Blue.Geometry.Point;
 
 public class SliderXYZ implements ChangeListener {
 

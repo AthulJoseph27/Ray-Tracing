@@ -1,6 +1,10 @@
-package Blue;
+package Blue.Light;
 
 import java.awt.*;
+
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
+import Blue.Solids.Sphere;
 
 public class SpotLight extends Sphere implements LightSource {
     double intensity;

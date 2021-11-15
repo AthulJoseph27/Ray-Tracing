@@ -1,8 +1,11 @@
-package Blue;
+package Blue.Solids;
 
 import java.awt.*;
 
-interface Solid {
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
+
+public interface Solid {
 
     public boolean isInside(Point p);
 

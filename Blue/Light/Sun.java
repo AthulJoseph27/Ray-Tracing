@@ -1,6 +1,11 @@
-package Blue;
+package Blue.Light;
 
 import java.awt.Color;
+
+import Blue.GUI.Callable;
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
+import Blue.Solids.Solid;
 
 public class Sun implements Solid, LightSource, Callable {
     Color color;
@@ -19,8 +24,8 @@ public class Sun implements Solid, LightSource, Callable {
 
         // System.out.println(Math.toDegrees(Vector.angleBetween(this.normal,
         // reflected_ray)));
-        if (Vector.angleBetween(this.normal, reflected_ray) < (Math.PI / 2.0))
-            return 0.0;
+        // if (Vector.angleBetween(this.normal, reflected_ray) < (Math.PI / 2.0))
+        // return 0.0;
 
         double angle = Vector.angleBetween(obj_normal, reflected_ray);
 

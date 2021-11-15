@@ -1,4 +1,7 @@
-package Blue;
+package Blue.Light;
+
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
 
 public interface LightSource {
 

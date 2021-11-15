@@ -1,6 +1,10 @@
-package Blue;
+package Blue.Light;
 
 import java.awt.Color;
+
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
+import Blue.Solids.Plane;
 
 public class AreaLight extends Plane implements LightSource {
 

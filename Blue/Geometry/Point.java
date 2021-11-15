@@ -1,4 +1,4 @@
-package Blue;
+package Blue.Geometry;
 
 public class Point {
     public double x, y, z;

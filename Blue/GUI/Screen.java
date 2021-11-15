@@ -1,4 +1,4 @@
-package Blue;
+package Blue.GUI;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -1,4 +1,4 @@
-package Blue;
+package Blue.Geometry;
 
 public class Vector {
     public double i, j, k;

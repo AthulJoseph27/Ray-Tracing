@@ -1,6 +1,10 @@
-package Blue;
+package Blue.Solids;
 
 import java.awt.Color;
+
+import Blue.GUI.Callable;
+import Blue.Geometry.Point;
+import Blue.Geometry.Vector;
 
 public class Plane implements Callable, Solid {
 

@@ -1,4 +1,4 @@
-package Blue;
+package Blue.Geometry;
 
 public class Limit {
 

@@ -1,4 +1,4 @@
-package Blue;
+package Blue.GUI;
 
 import java.awt.*;
 import javax.swing.JFrame;
@@ -6,9 +6,13 @@ import javax.swing.JFrame;
 public class Window extends JFrame {
 
     private Screen screen;
+    private final int WIDTH;
+    private final int HEIGHT;
 
-    public Window() {
-        screen = new Screen(500, 500);
+    public Window(int width, int height) {
+        this.WIDTH = width;
+        this.HEIGHT = height;
+        screen = new Screen(WIDTH, HEIGHT);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.add(screen);
@@ -19,7 +23,7 @@ public class Window extends JFrame {
         // this.getContentPane().setBackground(Color.BLACK);
     }
 
-    public void update_frame(Color[][] frame) {
-        screen.update_frame(frame);
+    public void updateFrame(Color[][] frame) {
+        screen.updateFrame(frame);
     }
 }

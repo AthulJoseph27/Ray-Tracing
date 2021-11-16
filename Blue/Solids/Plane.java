@@ -306,11 +306,8 @@ public class Plane implements Callable, Solid {
     public void transform(Point p, String type) {
         if (type.compareTo("center") == 0) {
             updateCenter(p);
-            // System.out.println("Center: " + center);
         } else if (type.compareTo("rotation") == 0) {
             updateOrientation(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
-            // System.out.println(p);
-            // System.out.println(normal);
         }
     }
 

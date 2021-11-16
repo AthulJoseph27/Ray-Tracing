@@ -1,4 +1,4 @@
-package Blue.Render;
+package Blue.Rendering;
 
 import java.util.ArrayList;
 import java.util.List;

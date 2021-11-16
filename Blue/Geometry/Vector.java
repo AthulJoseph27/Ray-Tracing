@@ -129,6 +129,12 @@ public class Vector {
 
     }
 
+    public void rotateXYZ(double rx, double ry, double rz) {
+        rotateX(rx);
+        rotateY(ry);
+        rotateZ(rz);
+    }
+
     public void customRotate(double[][] r) {
         double new_i = r[0][0] * i + r[0][1] * j + r[0][2] * k;
         double new_j = r[1][0] * i + r[1][1] * j + r[1][2] * k;

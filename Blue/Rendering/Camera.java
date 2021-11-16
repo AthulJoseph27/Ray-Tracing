@@ -1,18 +1,16 @@
-package Blue.Render;
+package Blue.Rendering;
 
 import java.awt.*;
 
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
-import Blue.Solids.Plane;
 import Blue.Solids.Solid;
 
 public class Camera implements Callable {
 
     Scene scene;
-    Point focus;
-    public Plane plane;
+    Point focus, planeCenter, deltaLocation, rotation;
     int width, height;
     double focal_length;
     Color[][] frame;
@@ -32,36 +30,17 @@ public class Camera implements Callable {
         this.height = height;
         this.scene = scene;
         this.focal_length = focal_length;
-        plane = new Plane(width, height, -1);
+        this.planeCenter = new Point(width / 2.0, 0, height / 2.0);
+        this.deltaLocation = new Point();
+        this.rotation = new Point();
         focus = getFocus();
         frame = new Color[height][width];
         clearFrame();
     }
 
-    // public void updateAngle(double rx, double ry, double rz) {
-    // plane.updateOrientation(rx, ry, rz);
-    // this.focus = getFocus();
-    // System.out.println(focus);
-    // }
-
     private Point getFocus() {
-        Vector normal = plane.normal.copy();
-        normal.unit_vector();
-        normal.scale(focal_length * -1);
-
-        Point f = new Point(plane.center.x + normal.i, plane.center.y + normal.j, plane.center.z + normal.k);
-
-        return f;
-    }
-
-    private Point getFocus(Point center) {
-        Vector normal = new Vector(new Point(), new Point(0, 1, 0));
-        normal.unit_vector();
-        normal.scale(focal_length * -1);
-
-        Point f = new Point(center.x + normal.i, center.y + normal.j, center.z + normal.k);
-
-        return f;
+        return new Point(planeCenter.x - deltaLocation.x, planeCenter.y + deltaLocation.y - focal_length,
+                planeCenter.z - deltaLocation.z);
     }
 
     public void clearFrame() {
@@ -174,8 +153,11 @@ public class Camera implements Callable {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                Point p = plane.transformCoordinate(new Point(x, 0, y));
-                frame[height - y - 1][x] = reflectRay(5, p, new Vector(focus, p));
+                Point p = new Point(x - deltaLocation.x, deltaLocation.y, y - deltaLocation.z);
+                Vector ray = new Vector(focus, p);
+                ray.unit_vector();
+                ray.rotateXYZ(rotation.x, rotation.y, rotation.z);
+                frame[height - y - 1][x] = reflectRay(5, p, ray);
             }
         }
 
@@ -184,30 +166,18 @@ public class Camera implements Callable {
 
     @Override
     public void transform(Point p, String type) {
-        /*
-         * rotating a around b 𝑎⃗ = 𝑎⃗ ∥𝑏⃗ +𝑎⃗ ⊥𝑏⃗ 𝑎⃗ ∥𝑏⃗ =(𝑎⃗ ⋅𝑏⃗ / 𝑏⃗ ⋅𝑏⃗
-         * )𝑏⃗ 𝑎⃗ ⊥𝑏⃗ ,𝜃 = ||𝑎⃗ ⊥𝑏⃗ ||(𝑥1𝑎⃗ ⊥𝑏⃗ +𝑥2𝑤⃗ )
-         * 
-         * 𝑤⃗ =𝑏⃗ ×𝑎⃗ ⊥𝑏⃗
-         * 
-         * 𝑥1=𝑐𝑜𝑠(𝜃)/||𝑎⃗ ⊥𝑏⃗ ||
-         * 
-         * 𝑥2=𝑠𝑖𝑛(𝜃)/||𝑤⃗ ||
-         * 
-         * 
-         * 
-         * 𝑎⃗ 𝑏,𝜃=𝑎⃗ ⊥𝑏⃗ ,𝜃 + 𝑎⃗ ∥𝑏⃗
-         */
-
-        Vector b = new Vector(focus, plane.center);
-        Vector a = plane.normal.copy();
-
+        if (type.equals("center")) {
+            deltaLocation = p;
+            focus = getFocus();
+        } else if (type.equals("rotation")) {
+            rotation = new Point(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
+        }
     }
 
     @Override
     public String toString() {
-        return "{" + " focus='" + focus + "'" + ", plane='" + plane + "'" + ", width='" + width + "'" + ", height='"
-                + height + "'" + ", focal_length='" + focal_length + "'" + "}";
+        return "{" + " focus='" + focus + "'" + ", rotation='" + rotation + "'" + ", width='" + width + "'"
+                + ", height='" + height + "'" + ", focal_length='" + focal_length + "'" + "}";
     }
 
 }

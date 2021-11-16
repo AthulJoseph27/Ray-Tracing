@@ -3,7 +3,7 @@ import java.io.*;
 import Blue.GUI.*;
 import Blue.Geometry.Point;
 import Blue.Light.*;
-import Blue.Render.*;
+import Blue.Rendering.*;
 import Blue.Solids.*;
 
 public class Main {
@@ -22,12 +22,9 @@ public class Main {
 
         Scene scene = new Scene(lightSource);
 
-        Plane pln = new Plane(3000, 500, new Point(260, 60, 180), Math.toRadians(105), 0.0, 0.0,
-                new Color(129, 47, 255), 0.01);
-        scene.add(pln);
+        scene.add(new Plane(3000, 500, new Point(260, 60, 180), Math.toRadians(105), 0.0, 0.0, new Color(129, 47, 255),
+                0.01));
 
-        // System.out.println(pln);
-        // System.exit(0);
         scene.add(new Sphere(50, new Point(100, 600, 400), new Color(255, 73, 138), 0.01));
         scene.add(new Sphere(50, new Point(120, 450, 300), new Color(255, 69, 0), 0.1));
         scene.add(new Sphere(50, new Point(140, 300, 200), new Color(255, 236, 73), 0.03));
@@ -43,8 +40,8 @@ public class Main {
         Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
 
         Window window = new Window(WIDTH, HEIGHT);
-        new SliderXYZ(pln, "Rotation", 0, 360, 0, "rotation");
-        new SliderXYZ(pln, "Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000), new Point(0, 0, 0),
+        new SliderXYZ(cam, "Rotation", 0, 360, 0, "rotation");
+        new SliderXYZ(cam, "Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000), new Point(0, 0, 0),
                 "center");
 
         // new SliderXYZ((Callable) scene.lightSource, "Location", new Point(-1000,

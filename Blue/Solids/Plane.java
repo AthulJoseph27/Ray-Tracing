@@ -28,7 +28,7 @@ public class Plane implements Callable, Solid {
         ref_point = new Point(width / 2.0, 0, 0);
         ref_point_orginal = ref_point.copy();
         ref_dir = new Vector(center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
         color = new Color(255, 255, 255, 255);
     }
 
@@ -45,7 +45,7 @@ public class Plane implements Callable, Solid {
         ref_point_orginal = ref_point.copy();
         ref_point_orginal = ref_point.copy();
         ref_dir = new Vector(center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
         normal = new Vector(new Point(), new Point(0, 1, 0));
         this.color = color;
     }
@@ -62,7 +62,7 @@ public class Plane implements Callable, Solid {
         ref_point = new Point(center.x, 0, 0);
         ref_point_orginal = ref_point.copy();
         ref_dir = new Vector(center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
         this.normal = Vector.unitVector(normal);
         this.color = color;
     }
@@ -93,7 +93,7 @@ public class Plane implements Callable, Solid {
         temp.rotateZ(rz);
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
         this.color = color;
 
     }
@@ -124,7 +124,7 @@ public class Plane implements Callable, Solid {
         temp.rotateZ(rz);
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
         this.color = color;
 
     }
@@ -151,7 +151,7 @@ public class Plane implements Callable, Solid {
         temp.rotateZ(rz);
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
         normal = new Vector(new Point(), new Point(0, 1, 0));
         normal.rotateX(rx);
         normal.rotateY(ry);
@@ -173,7 +173,7 @@ public class Plane implements Callable, Solid {
         temp.rotateZ(rz);
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
-        this.ref_dir.unit_vector();
+        this.ref_dir.unitVector();
     }
 
     public void updateEulerAngles() {
@@ -258,7 +258,7 @@ public class Plane implements Callable, Solid {
          */
 
         Vector u_temp = u.copy();
-        u.unit_vector();
+        u.unitVector();
 
         Vector c = new Vector(new Point(), center);
         double R = Vector.dotProduct(normal, c);

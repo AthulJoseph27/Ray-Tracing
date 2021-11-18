@@ -9,17 +9,18 @@ import Blue.Solids.Solid;
 
 public class Sun implements Solid, LightSource, Callable {
     Color color;
-    Point center;
+    public Point center;
     Vector normal;
 
     public Sun(Point center) {
         this.center = center;
         this.normal = new Vector(new Point(), center);
+        this.normal.unitVector();
         color = Color.WHITE;
     }
 
     @Override
-    public double getDiffuseBrightness(Point p, Vector obj_normal, Vector reflected_ray,
+    public double getDiffuseBrightness(Point p, Vector objNormal, Vector reflectedRay,
             double distance_to_nearest_object) {
 
         // System.out.println(Math.toDegrees(Vector.angleBetween(this.normal,
@@ -27,10 +28,10 @@ public class Sun implements Solid, LightSource, Callable {
         // if (Vector.angleBetween(this.normal, reflected_ray) < (Math.PI / 2.0))
         // return 0.0;
 
-        double angle = Vector.angleBetween(obj_normal, reflected_ray);
+        double angle = Vector.angleBetween(objNormal, reflectedRay);
 
-        if (distance_to_nearest_object != Double.MAX_VALUE)
-            return 0.0;
+        // if (distance_to_nearest_object != Double.MAX_VALUE)
+        // return 0.0;
 
         if (angle >= (Math.PI / 2.0))
             return 0.0;
@@ -38,28 +39,24 @@ public class Sun implements Solid, LightSource, Callable {
         double factor = 1.0 - angle / (Math.PI / 2.0);
 
         return factor;
-        // factor *= brightness;
+    }
 
-        // // Specular Reflections
-
-        // factor += (1.0 - Vector.angleBetween(normal, reflected_ray) / Math.PI) /
-        // 10.0;
-
-        // return Math.min(factor, 1.0);
+    public Vector getDirection() {
+        return normal.copy();
     }
 
     @Override
-    public double getSpecularBrightness(Vector reflected_ray, double distance_to_nearest_object) {
-        if (distance_to_nearest_object != Double.MAX_VALUE)
-            return 0.0;
+    public double getSpecularBrightness(Vector reflectedRay, double distanceToNearestObject) {
+        // if (distance_to_nearest_object != Double.MAX_VALUE)
+        // return 0.0;
 
-        double angle = Vector.angleBetween(this.normal, reflected_ray);
+        double angle = Vector.angleBetween(this.normal, reflectedRay);
         if (angle <= (Math.PI / 2.0))
             return 0;
 
         angle = Math.PI - angle;
 
-        return 1 - angle / (Math.PI / 2.0);
+        return Math.pow(1 - angle / (Math.PI / 2.0), 2);
     }
 
     @Override
@@ -99,8 +96,9 @@ public class Sun implements Solid, LightSource, Callable {
 
     @Override
     public void transform(Point p, String type) {
-        if (type.compareTo("center") == 0) {
-            this.center = p;
+        if (type.compareTo("rotation") == 0) {
+            this.normal = new Vector(new Point(), p);
+            this.normal.unitVector();
         }
     }
 

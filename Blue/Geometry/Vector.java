@@ -54,7 +54,7 @@ public class Vector {
         return new Vector(new Point(), new Point(v.i / magnitude, v.j / magnitude, v.k / magnitude));
     }
 
-    public void unit_vector() {
+    public void unitVector() {
         double magnitude = getMagnitude();
         i /= magnitude;
         j /= magnitude;

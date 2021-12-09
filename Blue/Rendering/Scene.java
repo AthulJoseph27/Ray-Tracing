@@ -60,17 +60,22 @@ public class Scene {
         objects.add(object);
     }
 
+    // private Vector normalizeCoordinate(Vector u){
+
+    // }
+
     public Color getSkyBoxColor(Vector u) {
         if (image == null)
             return new Color(0);
 
+        double w = Math.max(image.getWidth(), image.getHeight());
+        double h = Math.min(image.getWidth(), image.getHeight());
+
         double _u = 0.5 + Math.atan2(u.k, u.i) / (2.0 * Math.PI);
         double _v = 0.5 - Math.asin(u.j) / Math.PI;
 
-        _u *= image.getWidth() - 1;
-        _v *= image.getHeight() - 1;
-
-        // return new Color(0);
+        _u *= w - 1;
+        _v *= h / 2.0 - 1;
 
         return new Color(image.getRGB((int) _u, (int) _v));
     }

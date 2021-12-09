@@ -23,20 +23,33 @@ public class Main {
         Scene scene = new Scene(lightSource,
                 "/Users/athuljoseph/Desktop/Projects/RayTracing/assets/Equirectangular_Images/Sky.jpg");
 
-        scene.add(new Plane(3000, 500, new Point(260, 60, 180), Math.toRadians(105), 0.0, 0.0, new Color(129, 47, 255),
-                Math.random()));
+        // scene.add(new Plane(5000, 5000, new Point(260, 60, 180), Math.toRadians(105),
+        // 0.0, 0.0, new Color(129, 47, 255),
+        // 0.5));
 
-        scene.add(new Sphere(50, new Point(100, 600, 400), new Color(255, 73, 138), Math.random()));
-        scene.add(new Sphere(50, new Point(120, 450, 300), new Color(255, 69, 0), Math.random()));
-        scene.add(new Sphere(50, new Point(140, 300, 200), new Color(255, 236, 73), Math.random()));
+        scene.add(new Sphere(100, new Point(150, 300, 300), new Color(0, 186, 255), 1.0));
+        scene.add(new Sphere(100, new Point(350, 300, 300), new Color(255, 0, 59), 0));
 
-        scene.add(new Sphere(50, new Point(240, 600, 400), new Color(0, 255, 196), Math.random()));
-        scene.add(new Sphere(50, new Point(255, 450, 300), new Color(73, 92, 255), Math.random()));
-        scene.add(new Sphere(50, new Point(270, 300, 200), new Color(0, 186, 255), Math.random()));
+        // scene.add(new Sphere(50, new Point(100, 600, 400), new Color(255, 73, 138),
+        // Math.random()));
+        // scene.add(new Sphere(50, new Point(120, 450, 300), new Color(255, 69, 0),
+        // Math.random()));
+        // scene.add(new Sphere(50, new Point(140, 300, 200), new Color(255, 236, 73),
+        // Math.random()));
 
-        scene.add(new Sphere(50, new Point(380, 600, 400), new Color(255, 208, 210), Math.random()));
-        scene.add(new Sphere(50, new Point(390, 450, 300), new Color(196, 0, 255), Math.random()));
-        scene.add(new Sphere(50, new Point(400, 300, 200), new Color(255, 0, 59), Math.random()));
+        // scene.add(new Sphere(50, new Point(240, 600, 400), new Color(0, 255, 196),
+        // Math.random()));
+        // scene.add(new Sphere(50, new Point(255, 450, 300), new Color(73, 92, 255),
+        // Math.random()));
+        // scene.add(new Sphere(50, new Point(270, 300, 200), new Color(0, 186, 255),
+        // Math.random()));
+
+        // scene.add(new Sphere(50, new Point(380, 600, 400), new Color(255, 208, 210),
+        // Math.random()));
+        // scene.add(new Sphere(50, new Point(390, 450, 300), new Color(196, 0, 255),
+        // Math.random()));
+        // scene.add(new Sphere(50, new Point(400, 300, 200), new Color(255, 0, 59),
+        // Math.random()));
 
         Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
 

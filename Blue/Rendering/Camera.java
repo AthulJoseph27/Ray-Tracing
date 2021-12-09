@@ -103,10 +103,10 @@ public class Camera implements Callable {
 
     }
 
-    private Color reflectRay(int depth, Point p, Vector ray) {
+    private Color reflectRay(int depth, int skipIndex, Point p, Vector ray) {
         Vector u = Vector.unitVector(ray);
 
-        VectorIndex intersection = getIntersectionPoint(p, u, -1);
+        VectorIndex intersection = getIntersectionPoint(p, u, skipIndex);
 
         if (intersection.v == null) {
             // doesnt intersectin anything
@@ -122,17 +122,25 @@ public class Camera implements Callable {
         if (depth == 0) {
             reflectedRayColor = scene.getSkyBoxColor(u);
         } else {
-            reflectedRayColor = reflectRay(depth - 1, intersectionPoint, reflectedRay);
+            reflectedRayColor = reflectRay(depth - 1, intersection.index, intersectionPoint, reflectedRay);
         }
 
         double diffuseBrightness = getDiffuseBrightness(intersectionPoint, curObj.getNormal(intersection.v),
                 intersection.index);
 
-        double specularBrightness = getSpecularBrightness(reflectedRay) * curObj.getReflectivity();
+        // double specularBrightness = getSpecularBrightness(reflectedRay) *
+        // curObj.getReflectivity();
 
         Color c = lerp(curObj.getColor(), reflectedRayColor, curObj.getReflectivity());
         c = scaleBrightness(diffuseBrightness, c);
-        c = addBrightness(specularBrightness, c);
+        // c = addBrightness(specularBrightness, c);
+
+        if ((c.getRed() == 0) && (c.getBlue() == 0) && (c.getGreen() == 0)) {
+            System.out.println(c);
+            System.out.println(curObj.getColor());
+            System.out.println(reflectedRayColor);
+            // System.exit(1);
+        }
 
         return c;
     }
@@ -145,7 +153,7 @@ public class Camera implements Callable {
             return MINIMUM_ILLUMINATION;
         }
 
-        return Math.max(MINIMUM_ILLUMINATION, Math.abs(Math.cos(Vector.angleBetween(normal, dir))));
+        return Math.max(MINIMUM_ILLUMINATION, Math.cos(Vector.angleBetween(normal, dir)));
     }
 
     private double getSpecularBrightness(Vector reflectedRay) {
@@ -163,7 +171,7 @@ public class Camera implements Callable {
                 Vector ray = new Vector(focus, p);
                 ray.unitVector();
                 ray.rotateXYZ(rotation.x, rotation.y, rotation.z);
-                frame[height - y - 1][x] = reflectRay(MAX_BOUNCES, p, ray);
+                frame[height - y - 1][x] = reflectRay(MAX_BOUNCES, -1, p, ray);
             }
         }
 

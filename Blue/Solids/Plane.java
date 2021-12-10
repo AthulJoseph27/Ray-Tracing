@@ -9,7 +9,7 @@ import Blue.Geometry.Vector;
 public class Plane implements Callable, Solid {
 
     public int width, height;
-    public double rx, ry, rz;
+    public Vector rotation;
     public double reflectivity = 1.0;
     public Point center, ref_point, center_orginal, ref_point_orginal;
     public Vector normal, ref_dir;
@@ -18,9 +18,7 @@ public class Plane implements Callable, Solid {
     public Plane(int width, int height, double reflectivity) {
         this.width = width;
         this.height = height;
-        rx = 0;
-        ry = 0;
-        rz = 0;
+        this.rotation = new Vector();
         this.reflectivity = reflectivity;
         normal = new Vector(new Point(), new Point(0, 1, 0));
         center = new Point(width / 2.0, 0, height / 2.0);
@@ -35,9 +33,7 @@ public class Plane implements Callable, Solid {
     public Plane(int width, int height, Color color, double reflectivity) {
         this.width = width;
         this.height = height;
-        rx = 0;
-        ry = 0;
-        rz = 0;
+        this.rotation = new Vector();
         this.reflectivity = reflectivity;
         center = new Point(width / 2.0, 0, height / 2.0);
         center_orginal = center.copy();
@@ -53,9 +49,7 @@ public class Plane implements Callable, Solid {
     public Plane(int width, int height, Point center, Color color, double reflectivity) {
         this.width = width;
         this.height = height;
-        rx = 0;
-        ry = 0;
-        rz = 0;
+        this.rotation = new Vector();
         this.reflectivity = reflectivity;
         this.center = center;
         center_orginal = center.copy();
@@ -70,9 +64,7 @@ public class Plane implements Callable, Solid {
     public Plane(int width, int height, double rx, double ry, double rz, Color color, double reflectivity) {
         this.width = width;
         this.height = height;
-        this.rx = rx;
-        this.ry = ry;
-        this.rz = rz;
+        this.rotation = new Vector(new Point(), new Point(rx, ry, rz));
         this.reflectivity = reflectivity;
         this.color = new Color(255, 255, 255, 255);
         normal = new Vector(new Point(), new Point(0, 1, 0));
@@ -102,9 +94,7 @@ public class Plane implements Callable, Solid {
             double reflectivity) {
         this.width = width;
         this.height = height;
-        this.rx = rx;
-        this.ry = ry;
-        this.rz = rz;
+        this.rotation = new Vector(new Point(), new Point(rx, ry, rz));
         this.reflectivity = reflectivity;
         this.color = new Color(255, 255, 255, 255);
         normal = new Vector(new Point(), new Point(0, 1, 0));
@@ -137,9 +127,7 @@ public class Plane implements Callable, Solid {
     }
 
     public void updateOrientation(double rx, double ry, double rz) {
-        this.rx = rx;
-        this.ry = ry;
-        this.rz = rz;
+        this.rotation = new Vector(new Point(), new Point(rx, ry, rz));
         Vector temp = new Vector(new Point(), center_orginal);
         temp.rotateX(rx);
         temp.rotateY(ry);
@@ -162,33 +150,34 @@ public class Plane implements Callable, Solid {
     private void updateCenter(Point new_center) {
         center_orginal = new_center;
         Vector temp = new Vector(new Point(), new_center);
-        temp.rotateX(rx);
-        temp.rotateY(ry);
-        temp.rotateZ(rz);
+        temp.rotateX(rotation.i);
+        temp.rotateY(rotation.j);
+        temp.rotateZ(rotation.k);
         this.center = new Point(temp.i, temp.j, temp.k);
         temp = new Vector(new Point(), new Point(new_center.x, new_center.y, new_center.z - height / 2.0));
         this.ref_point_orginal = new Point(temp.i, temp.j, temp.k);
-        temp.rotateX(rx);
-        temp.rotateY(ry);
-        temp.rotateZ(rz);
+        temp.rotateX(rotation.i);
+        temp.rotateY(rotation.j);
+        temp.rotateZ(rotation.k);
         this.ref_point = new Point(temp.i, temp.j, temp.k);
         this.ref_dir = new Vector(this.center, ref_point);
         this.ref_dir.unitVector();
     }
 
     public void updateEulerAngles() {
-        rx = Vector.angleBetween(new Vector(new Point(), new Point(1, 0, 0)), normal);
-        ry = Vector.angleBetween(new Vector(new Point(), new Point(0, 1, 0)), normal);
-        rz = Vector.angleBetween(new Vector(new Point(), new Point(0, 0, 1)), normal);
+        this.rotation.i = Vector.angleBetween(new Vector(new Point(), new Point(1, 0, 0)), normal);
+        this.rotation.j = Vector.angleBetween(new Vector(new Point(), new Point(0, 1, 0)), normal);
+        this.rotation.k = Vector.angleBetween(new Vector(new Point(), new Point(0, 0, 1)), normal);
+
     }
 
     public Point transformCoordinate(Point point) {
 
         Vector v = new Vector(new Point(), new Point(point.x, point.y, point.z));
 
-        v.rotateX(rx);
-        v.rotateY(ry);
-        v.rotateZ(rz);
+        v.rotateX(this.rotation.i);
+        v.rotateY(this.rotation.j);
+        v.rotateZ(this.rotation.k);
 
         Point result = new Point(v.i, v.j, v.k);
 
@@ -323,8 +312,8 @@ public class Plane implements Callable, Solid {
 
     @Override
     public String toString() {
-        return "{" + " width='" + width + "'" + ", height='" + height + "'" + ", rx='" + rx + "'" + ", ry='" + ry + "'"
-                + ", rz='" + rz + "'" + ", center='" + center + "'" + ", ref_point='" + ref_point + "'" + ", normal='"
+        return "{" + " width='" + width + "'" + ", height='" + height + "'" + ", rotation='" + this.rotation + "'"
+                + ", center='" + center + "'" + ", ref_point='" + ref_point + "'" + ", normal='"
                 + normal + "'" + ", ref_dir='" + ref_dir + "'" + ", color='" + color + "'" + "}";
     }
 

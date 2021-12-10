@@ -135,13 +135,6 @@ public class Camera implements Callable {
         c = scaleBrightness(diffuseBrightness, c);
         // c = addBrightness(specularBrightness, c);
 
-        if ((c.getRed() == 0) && (c.getBlue() == 0) && (c.getGreen() == 0)) {
-            System.out.println(c);
-            System.out.println(curObj.getColor());
-            System.out.println(reflectedRayColor);
-            // System.exit(1);
-        }
-
         return c;
     }
 

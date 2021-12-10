@@ -11,11 +11,11 @@ public interface Solid {
 
     public boolean isOnSurface(Point p);
 
-    public boolean doIntersect(Point point_on_screen, Vector ray);
+    public boolean doIntersect(Point pointOnScreen, Vector ray);
 
     public Vector getNormal(Vector intersection);
 
-    public Vector getReflectedRay(Vector intersection_point, Vector ray);
+    public Vector getReflectedRay(Vector intersectionPoint, Vector ray);
 
     public Vector getIntersectionPoint(Point p, Vector u);
 

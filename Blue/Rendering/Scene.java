@@ -9,40 +9,46 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import Blue.GUI.Callable;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
 import Blue.Light.LightSource;
 import Blue.Light.SpotLight;
 import Blue.Solids.Solid;
 
-public class Scene {
+public class Scene implements Callable {
 
     public List<Solid> objects;
     public LightSource lightSource;
     public BufferedImage image;
+    private Point rotation;
 
     public Scene() {
         objects = new ArrayList<Solid>();
         lightSource = new SpotLight(new Point(0, 0, 0), 200, 1);
         image = null;
+        rotation = new Point();
     }
 
     public Scene(String imagePath) {
         objects = new ArrayList<Solid>();
         lightSource = new SpotLight(new Point(0, 0, 0), 200, 1);
         image = loadImage(imagePath);
+        rotation = new Point();
     }
 
     public Scene(LightSource lightSource) {
         objects = new ArrayList<Solid>();
         this.lightSource = lightSource;
         image = null;
+        rotation = new Point();
     }
 
     public Scene(LightSource lightSource, String imagePath) {
         objects = new ArrayList<Solid>();
         this.lightSource = lightSource;
         image = loadImage(imagePath);
+        rotation = new Point();
     }
 
     private BufferedImage loadImage(String path) {
@@ -60,24 +66,35 @@ public class Scene {
         objects.add(object);
     }
 
-    // private Vector normalizeCoordinate(Vector u){
-
-    // }
+    private void normalizeCoordinate(Vector u) {
+        u.rotateX(rotation.x);
+        u.rotateY(rotation.y);
+        u.rotateZ(rotation.z);
+    }
 
     public Color getSkyBoxColor(Vector u) {
         if (image == null)
             return new Color(0);
 
+        normalizeCoordinate(u);
+
         double w = Math.max(image.getWidth(), image.getHeight());
         double h = Math.min(image.getWidth(), image.getHeight());
 
-        double _u = 0.5 + Math.atan2(u.k, u.i) / (2.0 * Math.PI);
-        double _v = 0.5 - Math.asin(u.j) / Math.PI;
+        double _u = 0.5 + Math.atan2(u.j, u.i) / (2.0 * Math.PI);
+        double _v = 0.5 - Math.asin(u.k) / Math.PI;
 
         _u *= w - 1;
-        _v *= h / 2.0 - 1;
+        _v *= h - 1;
 
         return new Color(image.getRGB((int) _u, (int) _v));
+    }
+
+    @Override
+    public void transform(Point p, String parameterName) {
+        if (parameterName.equals("bgRotation")) {
+            rotation = new Point(Math.toRadians(p.x), Math.toRadians(p.y), Math.toRadians(p.z));
+        }
     }
 
 }

@@ -54,7 +54,7 @@ public class Vector {
         return new Vector(new Point(), new Point(v.i / magnitude, v.j / magnitude, v.k / magnitude));
     }
 
-    public void unit_vector() {
+    public void unitVector() {
         double magnitude = getMagnitude();
         i /= magnitude;
         j /= magnitude;
@@ -127,6 +127,12 @@ public class Vector {
         j = ry[1][0] * i + ry[1][1] * j + ry[1][2] * k;
         i = new_i;
 
+    }
+
+    public void rotateXYZ(double rx, double ry, double rz) {
+        rotateX(rx);
+        rotateY(ry);
+        rotateZ(rz);
     }
 
     public void customRotate(double[][] r) {

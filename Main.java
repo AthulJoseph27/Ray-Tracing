@@ -10,7 +10,7 @@ public class Main {
 
         private static final int WIDTH = 600;
         private static final int HEIGHT = 600;
-        private static final double FL = 400.0;
+        private static final double FL = 1000.0;
 
         public static void main(String[] args) throws IOException {
                 // LightSource lightSource = new AreaLight(200, 200, new Point(0, 0, 0), 0.0,
@@ -20,28 +20,48 @@ public class Main {
                 // 1);
                 LightSource lightSource = new Sun(new Point(0, 1, -1));
 
+                // Scene scene = new Scene(lightSource);
+
                 Scene scene = new Scene(lightSource,
-                                "/Users/athuljoseph/Desktop/Projects/RayTracing/assets/Equirectangular_Images/City.jpg");
+                                "/Users/athuljoseph/Desktop/Projects/RayTracing/assets/Equirectangular_Images/jungle.jpg");
 
-                // scene.add(new Plane(100000, 1000000, new Point(260, 50, -200),
-                // Math.toRadians(105),
+                // scene.add(new Plane(100000, 1000000, new Point(0, 0, 0),
+                // Math.toRadians(90),
                 // 0.0, 0.0, new Color(255, 255, 255),
-                // 0.0));
+                // 0.5));
 
-                scene.add(new Sphere(200, new Point(-150, 600, 350), new Color(0, 186, 255),
-                                0.6));
-                scene.add(new Sphere(200, new Point(300, 600, 350), new Color(255, 208, 210),
-                                0.5));
+                // scene.add(new Sphere(200, new Point(-150, 600, 350), new Color(234, 145,
+                // 129),
+                // 0.15));
 
-                scene.add(new Sphere(200, new Point(750, 600, 350), new Color(0, 255, 196),
-                                0.3));
+                scene.add(new Sphere(250, new Point(300, 900, 250), new Color(27, 140, 255),
+                                0.0));
+
+                // scene.add(new Sphere(350, new Point(900, 800, 350), new Color(255, 208, 210),
+                // 1.0));
+
+                // scene.add(new Sphere(120, new Point(650, 150, 120), new Color(0, 196, 255),
+                // 1.0));
+
+                // scene.add(new Sphere(50, new Point(150, 150, 50), new Color(255, 236, 73),
+                // 1.0));
+
+                // scene.add(new Sphere(120, new Point(-20, 150, 120), new Color(0, 255, 196),
+                // 1.0));
+
+                // scene.add(new Sphere(250, new Point(-300, 800, 250), new Color(73, 92, 255),
+                // 1.0));
+
+                // scene.add(new Sphere(100, new Point(-100, 1200, 100), new Color(0, 186, 255),
+                // 1.0));
 
                 Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
 
                 Window window = new Window(WIDTH, HEIGHT);
                 new SliderXYZ(scene, "BG Rotation", -360, 360, 0, "bgRotation");
                 new SliderXYZ((Callable) lightSource, "Light Rotation", -360, 360, 0, "rotation");
-                new SliderXYZ(cam, "Location", new Point(-1000, -1000, -1000), new Point(1000, 1000, 1000),
+                new SliderXYZ(cam, "Location", new Point(-1000, -1000, -1000),
+                                new Point(1000, 1000, 1000),
                                 new Point(0, 0, 0),
                                 "center");
 

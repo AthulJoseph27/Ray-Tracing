@@ -10,7 +10,7 @@ import Blue.Light.Sun;
 
 public class Camera implements Callable {
 
-    private static final double MINIMUM_ILLUMINATION = 0.3;
+    private static final double MINIMUM_ILLUMINATION = 0.7;
     private static final int MAX_BOUNCES = 5;
 
     Scene scene;
@@ -110,6 +110,8 @@ public class Camera implements Callable {
 
         if (intersection.v == null) {
             // doesnt intersectin anything
+            // if (depth == MAX_BOUNCES)
+            // return new Color(255, 255, 255);
             return scene.getSkyBoxColor(u);
         }
 
@@ -128,12 +130,12 @@ public class Camera implements Callable {
         double diffuseBrightness = getDiffuseBrightness(intersectionPoint, curObj.getNormal(intersection.v),
                 intersection.index);
 
-        // double specularBrightness = getSpecularBrightness(reflectedRay) *
-        // curObj.getReflectivity();
+        double specularBrightness = getSpecularBrightness(reflectedRay) *
+                curObj.getReflectivity();
 
         Color c = lerp(curObj.getColor(), reflectedRayColor, curObj.getReflectivity());
         c = scaleBrightness(diffuseBrightness, c);
-        // c = addBrightness(specularBrightness, c);
+        c = addBrightness(specularBrightness, c);
 
         return c;
     }
@@ -153,7 +155,7 @@ public class Camera implements Callable {
         Vector dir = ((Sun) scene.lightSource).getDirection();
         double angle = Vector.angleBetween(dir, reflectedRay);
 
-        return Math.pow(Math.min(0, Math.cos(angle)), 2.0);
+        return Math.pow(Math.min(0, Math.cos(angle)), 20.0);
     }
 
     public Color[][] getFrame() {

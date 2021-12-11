@@ -87,6 +87,8 @@ public class Scene implements Callable {
         _u *= w - 1;
         _v *= h - 1;
 
+        if (image.getWidth() < image.getHeight())
+            return new Color(image.getRGB((int) _v, (int) _u));
         return new Color(image.getRGB((int) _u, (int) _v));
     }
 

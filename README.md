@@ -24,8 +24,6 @@ If you are using and editor like VS-Code, you could just hit the run button on t
 
 ## Version History
 
-* v_1.1
-   * Fixed Bugs with reflections and added background
 * v_1.0
     * Basic Ray Tracing Engine
 * v_00

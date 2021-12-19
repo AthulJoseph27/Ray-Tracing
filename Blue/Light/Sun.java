@@ -1,6 +1,7 @@
 package Blue.Light;
 
 import java.awt.Color;
+import java.util.List;
 
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
@@ -104,6 +105,16 @@ public class Sun implements Solid, LightSource, Callable {
 
     @Override
     public double getReflectivity() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getRefractiveIndex() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Vector> getAllIntersectionPoint(Point p, Vector u) {
         throw new UnsupportedOperationException();
     }
 

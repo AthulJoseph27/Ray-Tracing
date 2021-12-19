@@ -1,8 +1,11 @@
 package Blue.Solids;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 
 import Blue.GUI.Callable;
+import Blue.Geometry.Limit;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
 
@@ -12,6 +15,7 @@ public class Sphere implements Solid, Callable {
     public Point center;
     public Color color;
     public double reflectivity = 1.0;
+    public double refractiveIndex = -1;
 
     public Sphere(double radius, Point center, double reflectivity) {
         this.radius = radius;
@@ -21,12 +25,30 @@ public class Sphere implements Solid, Callable {
         color = new Color(0xFFFFFF);
     }
 
+    public Sphere(double radius, Point center, double reflectivity, double refractiveIndex) {
+        this.radius = radius;
+        this.r2 = radius * radius;
+        this.center = center;
+        this.reflectivity = reflectivity;
+        this.refractiveIndex = refractiveIndex;
+        color = new Color(0xFFFFFF);
+    }
+
     public Sphere(double radius, Point center, Color color, double reflectivity) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
         this.color = color;
         this.reflectivity = reflectivity;
+    }
+
+    public Sphere(double radius, Point center, Color color, double reflectivity, double refractiveIndex) {
+        this.radius = radius;
+        this.r2 = radius * radius;
+        this.center = center;
+        this.color = color;
+        this.reflectivity = reflectivity;
+        this.refractiveIndex = refractiveIndex;
     }
 
     @Override
@@ -151,6 +173,49 @@ public class Sphere implements Solid, Callable {
     }
 
     @Override
+    public List<Vector> getAllIntersectionPoint(Point p, Vector ray) {
+        Vector u = Vector.unitVector(ray);
+
+        Vector q = new Vector(center, p);
+        double q_magnitude = q.getMagnitude();
+        double b = 2.0 * Vector.dotProduct(u, q);
+        double c = q_magnitude * q_magnitude - r2;
+
+        double d = (b * b - 4.0 * c);
+
+        if (d < 0)
+            return null;
+
+        d = Math.sqrt(d);
+
+        double x1 = (-b + d) / 2.0;
+        double x2 = (-b - d) / 2.0;
+
+        // if (x1 < 0 && x2 < 0) {
+        // return null;
+        // }
+
+        Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
+
+        Vector t = u.copy();
+        t.scale(x1);
+        p1.add(t);
+
+        if (Math.abs(x1 - x2) < Limit.ERROR_LIMIT) {
+            return Arrays.asList(p1, null);
+        }
+
+        t = u.copy();
+        t.scale(x2);
+        p2.add(t);
+
+        if (p.euclideanDistance(p1) < p.euclideanDistance(p2))
+            return Arrays.asList(p1, p2);
+
+        return Arrays.asList(p2, p1);
+    }
+
+    @Override
     public Vector getNormal(Vector intersection) {
         return new Vector(this.center, intersection);
     }
@@ -171,6 +236,11 @@ public class Sphere implements Solid, Callable {
     @Override
     public double getReflectivity() {
         return reflectivity;
+    }
+
+    @Override
+    public double getRefractiveIndex() {
+        return refractiveIndex;
     }
 
     @Override

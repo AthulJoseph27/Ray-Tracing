@@ -1,6 +1,7 @@
 package Blue.Solids;
 
 import java.awt.Color;
+import java.util.List;
 
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
@@ -150,6 +151,16 @@ public class Cube implements Callable, Solid {
 
     @Override
     public void transform(Point p, String parameterName) {
+    }
+
+    @Override
+    public List<Vector> getAllIntersectionPoint(Point p, Vector u) {
+        return null;
+    }
+
+    @Override
+    public double getRefractiveIndex() {
+        return -1;
     }
 
 }

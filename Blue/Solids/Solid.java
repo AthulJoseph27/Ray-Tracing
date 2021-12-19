@@ -2,6 +2,7 @@ package Blue.Solids;
 
 import java.awt.*;
 
+import java.util.List;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
 
@@ -22,5 +23,9 @@ public interface Solid {
     public Color getColor();
 
     public double getReflectivity();
+
+    public double getRefractiveIndex();
+
+    public List<Vector> getAllIntersectionPoint(Point p, Vector u);
 
 }

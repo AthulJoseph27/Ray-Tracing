@@ -1,6 +1,7 @@
 package Blue.Solids;
 
 import java.awt.Color;
+import java.util.List;
 
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
@@ -212,11 +213,11 @@ public class Plane implements Callable, Solid {
     }
 
     @Override
-    public Vector getReflectedRay(Vector intersection_point, Vector ray) {
+    public Vector getReflectedRay(Vector intersectionPoint, Vector ray) {
 
         // d = d - (2*d.n)n
 
-        if (intersection_point == null)
+        if (intersectionPoint == null)
             return ray;
 
         Vector d = Vector.unitVector(ray);
@@ -287,6 +288,11 @@ public class Plane implements Callable, Solid {
     }
 
     @Override
+    public List<Vector> getAllIntersectionPoint(Point p, Vector u) {
+        return null;
+    }
+
+    @Override
     public Color getColor() {
         return this.color;
     }
@@ -303,6 +309,11 @@ public class Plane implements Callable, Solid {
     @Override
     public Vector getNormal(Vector intersection) {
         return this.normal;
+    }
+
+    @Override
+    public double getRefractiveIndex() {
+        return -1;
     }
 
     @Override

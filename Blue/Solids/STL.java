@@ -1,7 +1,6 @@
 package Blue.Solids;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -33,14 +32,14 @@ public class STL {
         return v;
     }
 
-    private static Triangle getTriangle(byte[] totalBytes, int offset) {
+    private static Triangle getTriangle(byte[] totalBytes, int offset, int index) {
 
         Vector normal = getVector(totalBytes, offset);
         Point a = new Point(getVector(totalBytes, offset + 12));
         Point b = new Point(getVector(totalBytes, offset + 24));
         Point c = new Point(getVector(totalBytes, offset + 36));
 
-        return new Triangle(a, b, c, normal);
+        return new Triangle(a, b, c, normal, index);
     }
 
     public static List<Triangle> load(String fileName) {
@@ -73,12 +72,8 @@ public class STL {
             int offset = 84;
 
             for (int i = 0; i < noOfVertices; i++) {
-                triangles.add(getTriangle(bytes, offset));
+                triangles.add(getTriangle(bytes, offset, i));
                 offset += 50;
-            }
-
-            for (Triangle t : triangles) {
-                System.out.println(t);
             }
 
         } catch (Exception e) {

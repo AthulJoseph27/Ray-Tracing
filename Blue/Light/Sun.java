@@ -6,6 +6,7 @@ import java.util.List;
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
+import Blue.Rendering.Ray;
 import Blue.Solids.Solid;
 
 public class Sun implements Solid, LightSource, Callable {
@@ -71,22 +72,12 @@ public class Sun implements Solid, LightSource, Callable {
     }
 
     @Override
-    public boolean doIntersect(Point point_on_screen, Vector ray) {
-        return true;
-    }
-
-    @Override
-    public Vector getNormal(Vector intersection) {
-        return normal;
-    }
-
-    @Override
-    public Vector getReflectedRay(Vector intersection_point, Vector ray) {
+    public Ray getReflectedRay(Ray ray) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector getIntersectionPoint(Point p, Vector u) {
+    public Ray getIntersectionPoint(Ray ray) {
         throw new UnsupportedOperationException();
     }
 
@@ -105,16 +96,6 @@ public class Sun implements Solid, LightSource, Callable {
 
     @Override
     public double getReflectivity() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getRefractiveIndex() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Vector> getAllIntersectionPoint(Point p, Vector u) {
         throw new UnsupportedOperationException();
     }
 

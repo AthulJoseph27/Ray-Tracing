@@ -4,30 +4,38 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 
+import Blue.Geometry.Limit;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
+import Blue.Rendering.Ray;
 
 public class Triangle implements Solid {
 
     Point[] vertices = new Point[3];
+    Point center;
     Vector normal;
     double reflectivity, refractivity;
     Color color;
+    int index = -1;
 
-    public Triangle(Point a, Point b, Point c, Vector normal) {
+    public Triangle(Point a, Point b, Point c, Vector normal, int index) {
         this.vertices[0] = a;
         this.vertices[1] = b;
         this.vertices[2] = c;
         this.normal = normal;
         this.reflectivity = 0;
+        this.index = index;
+        this.center = getCenter();
         this.color = Color.WHITE;
     }
 
-    public Triangle(Point a, Point b, Point c, Vector normal, double reflectivity) {
+    public Triangle(Point a, Point b, Point c, Vector normal, double reflectivity, int index) {
         this.vertices[0] = a;
         this.vertices[1] = b;
         this.vertices[2] = c;
         this.normal = normal;
+        this.center = getCenter();
+        this.index = index;
         this.reflectivity = reflectivity;
         this.color = Color.WHITE;
     }
@@ -50,28 +58,24 @@ public class Triangle implements Solid {
     }
 
     private boolean isInsideTriangle(Vector p) {
-        Vector a = new Vector(new Point(), vertices[0]);
-        Vector b = new Vector(new Point(), vertices[1]);
-        Vector c = new Vector(new Point(), vertices[2]);
+        Vector AB = new Vector(vertices[0], vertices[1]);
+        Vector BC = new Vector(vertices[1], vertices[2]);
+        Vector CA = new Vector(vertices[2], vertices[0]);
 
-        // Making p the origin
-        a.substract(p);
-        b.substract(p);
-        c.substract(p);
+        Vector AP = new Vector(vertices[0], p);
+        Vector BP = new Vector(vertices[1], p);
+        Vector CP = new Vector(vertices[2], p);
 
-        Vector u = Vector.crossProduct(b, c);
-        Vector v = Vector.crossProduct(c, a);
-        Vector w = Vector.crossProduct(a, b);
+        Vector u = Vector.unitVector(Vector.crossProduct(AB, AP));
+        Vector v = Vector.unitVector(Vector.crossProduct(BC, BP));
+        Vector w = Vector.unitVector(Vector.crossProduct(CA, CP));
 
-        if (Vector.dotProduct(u, v) < 0.0) {
-            return false;
-        }
+        double dir1 = Vector.dotProduct(u, v);
+        double dir2 = Vector.dotProduct(v, w);
 
-        if (Vector.dotProduct(u, w) < 0.0) {
-            return false;
-        }
+        // both should be 1
 
-        return true;
+        return (Math.abs(1.0 - dir1) <= Limit.ERROR_LIMIT && Math.abs(1.0 - dir2) <= Limit.ERROR_LIMIT);
 
     }
 
@@ -86,38 +90,23 @@ public class Triangle implements Solid {
     }
 
     @Override
-    public boolean doIntersect(Point p, Vector u) {
-        Vector intersection = getIntersectionPoint(p, u);
-
-        if (intersection == null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public Vector getNormal(Vector intersection) {
-        return this.normal.copy();
-    }
-
-    @Override
-    public Vector getReflectedRay(Vector intersectionPoint, Vector ray) {
-        if (intersectionPoint == null)
+    public Ray getReflectedRay(Ray ray) {
+        if (ray.getIntersection() == null)
             return ray;
 
-        Vector d = Vector.unitVector(ray);
+        Vector d = Vector.unitVector(ray.getRay());
 
-        Vector n = Vector.unitVector(normal);
+        Vector n = Vector.unitVector(ray.getNormal());
 
         n.scale(2.0 * Vector.dotProduct(d, n));
 
         d.substract(n);
 
-        return d;
+        return new Ray(new Point(ray.getIntersection()), d, ray.getHitIndex(), ray.getHitSubIndex());
     }
 
     @Override
-    public Vector getIntersectionPoint(Point p, Vector u) {
+    public Ray getIntersectionPoint(Ray ray) {
         /*
          * Vector passing through p and direction u => V = p + t*u; CV.N = 0
          * n.x*p.x+u.x*t*n.x-c.x*n.x + n.y*p.y+u.y*t*n.y-c.y*n.y +
@@ -126,17 +115,14 @@ public class Triangle implements Solid {
          * t(n.u) + n.p = c.n R = c.n; Q = n.p; S = u.p; t = (R-Q)/S
          */
 
-        Vector u_temp = u.copy();
-        u.unitVector();
+        Vector u = Vector.unitVector(ray.getRay().copy());
 
-        Point center = getCenter();
         Vector c = new Vector(new Point(), center);
         double R = Vector.dotProduct(normal, c);
-        double Q = Vector.dotProduct(normal, new Vector(new Point(), p));
+        double Q = Vector.dotProduct(normal, new Vector(new Point(), ray.getOrigin()));
         double S = Vector.dotProduct(normal, u);
 
         if (S == 0) {
-            u = u_temp;
             return null;
         }
 
@@ -148,15 +134,19 @@ public class Triangle implements Solid {
         Vector intersection = u.copy();
 
         intersection.scale(t);
-        intersection.add(new Vector(new Point(), p));
-
-        u = u_temp;
+        intersection.add(new Vector(new Point(), ray.getOrigin()));
 
         if (isInsideTriangle(intersection)) {
-            return intersection;
+            if ((ray.getIntersection() == null)
+                    || (ray.getOrigin().euclideanDistance(ray.getIntersection()) > ray.getOrigin()
+                            .euclideanDistance(intersection))) {
+                ray.setHitSubIndex(index);
+                ray.setIntersection(intersection);
+                ray.setNormal(this.normal.copy());
+            }
         }
 
-        return null;
+        return ray;
     }
 
     @Override
@@ -167,16 +157,6 @@ public class Triangle implements Solid {
     @Override
     public double getReflectivity() {
         return reflectivity;
-    }
-
-    @Override
-    public double getRefractiveIndex() {
-        return refractivity;
-    }
-
-    @Override
-    public List<Vector> getAllIntersectionPoint(Point p, Vector u) {
-        return null;
     }
 
     @Override

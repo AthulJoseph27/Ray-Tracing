@@ -2,9 +2,9 @@ package Blue.Solids;
 
 import java.awt.*;
 
-import java.util.List;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
+import Blue.Rendering.Ray;
 
 public interface Solid {
 
@@ -12,20 +12,12 @@ public interface Solid {
 
     public boolean isOnSurface(Point p);
 
-    public boolean doIntersect(Point pointOnScreen, Vector ray);
+    public Ray getReflectedRay(Ray ray);
 
-    public Vector getNormal(Vector intersection);
-
-    public Vector getReflectedRay(Vector intersectionPoint, Vector ray);
-
-    public Vector getIntersectionPoint(Point p, Vector u);
+    public Ray getIntersectionPoint(Ray ray);
 
     public Color getColor();
 
     public double getReflectivity();
-
-    public double getRefractiveIndex();
-
-    public List<Vector> getAllIntersectionPoint(Point p, Vector u);
 
 }

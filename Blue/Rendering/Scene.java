@@ -14,6 +14,7 @@ import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
 import Blue.Light.LightSource;
 import Blue.Light.SpotLight;
+import Blue.Light.Sun;
 import Blue.Solids.Solid;
 
 public class Scene implements Callable {
@@ -25,14 +26,14 @@ public class Scene implements Callable {
 
     public Scene() {
         objects = new ArrayList<Solid>();
-        lightSource = new SpotLight(new Point(0, 0, 0), 200, 1);
+        lightSource = new Sun(new Point(0, 1, -1));
         image = null;
         rotation = new Point();
     }
 
     public Scene(String imagePath) {
         objects = new ArrayList<Solid>();
-        lightSource = new SpotLight(new Point(0, 0, 0), 200, 1);
+        lightSource = new Sun(new Point(0, 1, -1));
         image = loadImage(imagePath);
         rotation = new Point();
     }

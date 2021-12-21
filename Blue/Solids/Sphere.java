@@ -8,6 +8,7 @@ import Blue.GUI.Callable;
 import Blue.Geometry.Limit;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
+import Blue.Rendering.Ray;
 
 public class Sphere implements Solid, Callable {
 
@@ -16,39 +17,50 @@ public class Sphere implements Solid, Callable {
     public Color color;
     public double reflectivity = 1.0;
     public double refractiveIndex = -1;
+    private int index;
 
-    public Sphere(double radius, Point center, double reflectivity) {
+    public Sphere(double radius, Point center, double reflectivity, int index) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
         this.reflectivity = reflectivity;
+        this.index = index;
         color = new Color(0xFFFFFF);
     }
 
-    public Sphere(double radius, Point center, double reflectivity, double refractiveIndex) {
+    public Sphere(double radius, Point center, double reflectivity, double refractiveIndex, int index) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
         this.reflectivity = reflectivity;
         this.refractiveIndex = refractiveIndex;
+        this.index = index;
         color = new Color(0xFFFFFF);
     }
 
-    public Sphere(double radius, Point center, Color color, double reflectivity) {
+    public Sphere(double radius, Point center, Color color, double reflectivity, int index) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
         this.color = color;
         this.reflectivity = reflectivity;
+        this.index = index;
     }
 
-    public Sphere(double radius, Point center, Color color, double reflectivity, double refractiveIndex) {
+    public Sphere(double radius, Point center, Color color, double reflectivity, double refractiveIndex, int index) {
         this.radius = radius;
         this.r2 = radius * radius;
         this.center = center;
         this.color = color;
         this.reflectivity = reflectivity;
         this.refractiveIndex = refractiveIndex;
+        this.index = index;
+    }
+
+    private boolean validIntersection(Ray ray, Vector intersection) {
+        return ((ray.getIntersection() == null)
+                || (ray.getOrigin().euclideanDistance(ray.getIntersection()) > ray.getOrigin()
+                        .euclideanDistance(intersection)));
     }
 
     @Override
@@ -68,54 +80,13 @@ public class Sphere implements Solid, Callable {
     }
 
     @Override
-    public boolean doIntersect(Point p, Vector ray) {
+    public Ray getIntersectionPoint(Ray ray) {
+        if (ray.getOrginIndex() == index)
+            return ray;
 
-        /*
-         * A ray passing through point P and direction vector U can be represented as
-         * 
-         * R(t) = P + tU
-         * 
-         * |X-C|^2 = r^2 ; C is center of the Sphere and r is radius of the sphere
-         * 
-         * substituting X with R(t)
-         * 
-         * |P-C|^2 - r^2 + 2tU * (P-C) + t^2(U.U) = 0
-         * 
-         * a = |U.U| b = 2*|U.(P-C)| c = |P-C|^2 - r^2
-         * 
-         * d = b^2 - 4ac ; --> d >= 0
-         */
+        Vector u = Vector.unitVector(ray.getRay());
 
-        Vector u = Vector.unitVector(ray);
-
-        Vector q = new Vector(center, p);
-
-        double q_magnitude = q.getMagnitude();
-        double b = 2.0 * Vector.dotProduct(u, q);
-        double c = q_magnitude * q_magnitude - r2;
-
-        double d = (b * b - 4.0 * c); // b^2 - 4ac, here a = 1.0
-
-        if (d < 0)
-            return false;
-
-        d = Math.sqrt(d);
-
-        double x1 = (-b + d) / 2.0;
-        double x2 = (-b - d) / 2.0;
-
-        if (x1 < 0 && x2 < 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public Vector getIntersectionPoint(Point p, Vector ray) {
-        Vector u = Vector.unitVector(ray);
-
-        Vector q = new Vector(center, p);
+        Vector q = new Vector(center, ray.getOrigin());
         double q_magnitude = q.getMagnitude();
         double b = 2.0 * Vector.dotProduct(u, q);
         double c = q_magnitude * q_magnitude - r2;
@@ -123,7 +94,7 @@ public class Sphere implements Solid, Callable {
         double d = (b * b - 4.0 * c);
 
         if (d < 0)
-            return null;
+            return ray;
 
         d = Math.sqrt(d);
 
@@ -131,10 +102,10 @@ public class Sphere implements Solid, Callable {
         double x2 = (-b - d) / 2.0;
 
         if (x1 < 0 && x2 < 0) {
-            return null;
+            return ray;
         }
 
-        Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
+        Vector p1 = new Vector(new Point(), ray.getOrigin()), p2 = new Vector(new Point(), ray.getOrigin());
 
         Vector t = u.copy();
         t.scale(x1);
@@ -144,80 +115,58 @@ public class Sphere implements Solid, Callable {
         t.scale(x2);
         p2.add(t);
 
-        if (x1 < 0)
-            return p2;
-        if (x2 < 0)
-            return p1;
+        if (x1 < 0) {
+            if (validIntersection(ray, p2)) {
+                ray.setHitSubIndex(-1);
+                ray.setHitIndex(index);
+                ray.setIntersection(p2);
+                ray.setNormal(new Vector(this.center, p2));
+            }
+            return ray;
+        }
+        if (x2 < 0) {
+            if (validIntersection(ray, p1)) {
+                ray.setHitSubIndex(-1);
+                ray.setHitIndex(index);
+                ray.setIntersection(p1);
+                ray.setNormal(new Vector(this.center, p1));
+            }
+            return ray;
+        }
 
-        if (p.euclideanDistance(p1) < p.euclideanDistance(p2))
-            return p1;
+        if (ray.getOrigin().euclideanDistance(p1) < ray.getOrigin().euclideanDistance(p2)) {
+            if (validIntersection(ray, p1)) {
+                ray.setHitSubIndex(-1);
+                ray.setHitIndex(index);
+                ray.setIntersection(p1);
+                ray.setNormal(new Vector(this.center, p1));
+            }
+        } else {
+            if (validIntersection(ray, p2)) {
+                ray.setHitSubIndex(-1);
+                ray.setHitIndex(index);
+                ray.setIntersection(p2);
+                ray.setNormal(new Vector(this.center, p2));
+            }
+        }
 
-        return p2;
+        return ray;
     }
 
     @Override
-    public Vector getReflectedRay(Vector intersection_point, Vector ray) {
+    public Ray getReflectedRay(Ray ray) {
+        if (ray.getIntersection() == null)
+            return ray;
 
-        Vector normal = new Vector(this.center, intersection_point);
+        Vector d = Vector.unitVector(ray.getRay());
 
-        Vector n = Vector.unitVector(normal);
-        Vector d = Vector.unitVector(ray);
+        Vector n = Vector.unitVector(ray.getNormal());
 
-        // Reflected ray = d - 2*(d.n)n^
-
-        n.scale(2.0 * Vector.dotProduct(n, d));
+        n.scale(2.0 * Vector.dotProduct(d, n));
 
         d.substract(n);
 
-        return d;
-    }
-
-    @Override
-    public List<Vector> getAllIntersectionPoint(Point p, Vector ray) {
-        Vector u = Vector.unitVector(ray);
-
-        Vector q = new Vector(center, p);
-        double q_magnitude = q.getMagnitude();
-        double b = 2.0 * Vector.dotProduct(u, q);
-        double c = q_magnitude * q_magnitude - r2;
-
-        double d = (b * b - 4.0 * c);
-
-        if (d < 0)
-            return null;
-
-        d = Math.sqrt(d);
-
-        double x1 = (-b + d) / 2.0;
-        double x2 = (-b - d) / 2.0;
-
-        // if (x1 < 0 && x2 < 0) {
-        // return null;
-        // }
-
-        Vector p1 = new Vector(new Point(), p), p2 = new Vector(new Point(), p);
-
-        Vector t = u.copy();
-        t.scale(x1);
-        p1.add(t);
-
-        if (Math.abs(x1 - x2) < Limit.ERROR_LIMIT) {
-            return Arrays.asList(p1, null);
-        }
-
-        t = u.copy();
-        t.scale(x2);
-        p2.add(t);
-
-        if (p.euclideanDistance(p1) < p.euclideanDistance(p2))
-            return Arrays.asList(p1, p2);
-
-        return Arrays.asList(p2, p1);
-    }
-
-    @Override
-    public Vector getNormal(Vector intersection) {
-        return new Vector(this.center, intersection);
+        return new Ray(new Point(ray.getIntersection()), d, ray.getHitIndex(), ray.getHitSubIndex());
     }
 
     @Override
@@ -236,11 +185,6 @@ public class Sphere implements Solid, Callable {
     @Override
     public double getReflectivity() {
         return reflectivity;
-    }
-
-    @Override
-    public double getRefractiveIndex() {
-        return refractiveIndex;
     }
 
     @Override

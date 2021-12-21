@@ -6,6 +6,7 @@ import java.util.List;
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
+import Blue.Solids.CustomSolid;
 import Blue.Solids.Solid;
 import Blue.Solids.Sphere;
 import Blue.Light.Sun;
@@ -85,128 +86,38 @@ public class Camera implements Callable {
 
     }
 
-    private VectorIndex getIntersectionPoint(Point p, Vector u, int skipindex) {
-        Vector intersectionPoint = null;
-
-        int index = -1;
+    private void getIntersectionPoint(Ray ray) {
 
         for (int i = 0; i < scene.objects.size(); i++) {
-            if (i == skipindex)
+            if (ray.getHitSubIndex() == -1 && i == ray.getHitIndex())
                 continue;
-            Vector ip = scene.objects.get(i).getIntersectionPoint(p, u);
-            if (ip == null)
-                continue;
-            if ((intersectionPoint == null) || p.euclideanDistance(ip) < p.euclideanDistance(intersectionPoint)) {
-                intersectionPoint = ip;
-                index = i;
-            }
+
+            ray = scene.objects.get(i).getIntersectionPoint(ray);
         }
 
-        return new VectorIndex(intersectionPoint, index);
     }
 
-    // private Color reflectRayWithRefraction(int depth, int skipIndex, Point p, Vector ray) {
-    //     Vector u = Vector.unitVector(ray);
+    private Color reflectRay(int depth, Ray ray) {
+        Vector u = Vector.unitVector(ray.getRay());
 
-    //     VectorIndex intersection = getIntersectionPoint(p, u, skipIndex);
+        getIntersectionPoint(ray);
 
-    //     if (intersection.v == null) {
-    //         return scene.getSkyBoxColor(u);
-    //     }
-
-    //     Point intersectionPoint = new Point(intersection.v);
-    //     Solid curObj = scene.objects.get(intersection.index);
-    //     Vector reflectedRay = curObj.getReflectedRay(intersection.v, u);
-
-    //     Color reflectedRayColor;
-
-    //     if (depth == 0) {
-    //         reflectedRayColor = scene.getSkyBoxColor(u);
-    //     } else {
-    //         Color refractedRayColor = null;
-    //         reflectedRayColor = reflectRayWithRefraction(depth - 1, intersection.index, intersectionPoint,
-    //                 reflectedRay);
-    //         if (curObj instanceof Sphere) {
-    //             if (curObj.getRefractiveIndex() > 1.0) {
-    //                 Vector normal = curObj.getNormal(intersection.v);
-    //                 Vector perp = Vector.crossProduct(normal, u);
-    //                 double incidenctAngle = Math.PI - Vector.angleBetween(normal, u);
-    //                 double refractedAngle = Math.asin(Math.sin(incidenctAngle) / curObj.getRefractiveIndex());
-    //                 double alpha = incidenctAngle - refractedAngle;
-    //                 Vector refractedRay = u.copy();
-    //                 refractedRay.scale(Math.cos(alpha));
-    //                 Vector temp = Vector.crossProduct(u, perp);
-    //                 temp.scale(Math.sin(alpha));
-    //                 refractedRay.add(temp);
-
-    //                 List<Vector> intersectionPoints = curObj.getAllIntersectionPoint(intersectionPoint, refractedRay);
-
-    //                 if (intersectionPoints.get(1) != null) {
-    //                     System.out.println(intersectionPoint.euclideanDistance(intersectionPoints.get(0))
-    //                             + " should be close to zero");
-    //                     System.out.println(intersectionPoint.euclideanDistance(intersectionPoints.get(1))
-    //                             + " should be greater than 0, a reasonable distance");
-    //                     normal = curObj.getNormal(intersectionPoints.get(1));
-    //                     perp = Vector.crossProduct(normal, refractedRay);
-    //                     incidenctAngle = Vector.angleBetween(normal, refractedRay);
-    //                     System.out.println(Math.toDegrees(incidenctAngle) + " should be less than 90");
-    //                     refractedAngle = Math.asin(Math.sin(incidenctAngle) * curObj.getRefractiveIndex());
-    //                     System.out.println(Math.toDegrees(refractedAngle) + " should be greater than incident angle");
-    //                     alpha = refractedAngle - incidenctAngle;
-    //                     Vector tmp = refractedRay.copy();
-    //                     refractedRay.scale(Math.cos(alpha));
-    //                     temp = Vector.crossProduct(tmp, perp);
-    //                     temp.scale(Math.sin(alpha));
-    //                     refractedRay.add(temp);
-    //                     refractedRayColor = reflectRayWithRefraction(depth - 1, intersection.index, intersectionPoint,
-    //                             refractedRay);
-
-    //                     reflectedRayColor = lerp(reflectedRayColor, refractedRayColor, 1.0 - curObj.getReflectivity());
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     double diffuseBrightness = getDiffuseBrightness(intersectionPoint, curObj.getNormal(intersection.v),
-    //             intersection.index);
-
-    //     double specularBrightness = getSpecularBrightness(reflectedRay) *
-    //             curObj.getReflectivity();
-
-    //     Color c = lerp(curObj.getColor(), reflectedRayColor, curObj.getReflectivity());
-    //     c = scaleBrightness(diffuseBrightness, c);
-    //     c = addBrightness(specularBrightness, c);
-
-    //     return c;
-
-    // }
-
-    private Color reflectRay(int depth, int skipIndex, Point p, Vector ray) {
-        Vector u = Vector.unitVector(ray);
-
-        VectorIndex intersection = getIntersectionPoint(p, u, skipIndex);
-
-        if (intersection.v == null) {
-            // doesnt intersectin anything
-            // if (depth == MAX_BOUNCES)
-            // return new Color(255, 255, 255);
+        if (ray.getIntersection() == null) {
             return scene.getSkyBoxColor(u);
         }
 
-        Point intersectionPoint = new Point(intersection.v);
-        Solid curObj = scene.objects.get(intersection.index);
-        Vector reflectedRay = curObj.getReflectedRay(intersection.v, u);
+        Solid curObj = scene.objects.get(ray.getHitIndex());
+        Ray reflectedRay = curObj.getReflectedRay(ray);
 
         Color reflectedRayColor;
 
         if (depth == 0) {
             reflectedRayColor = scene.getSkyBoxColor(u);
         } else {
-            reflectedRayColor = reflectRay(depth - 1, intersection.index, intersectionPoint, reflectedRay);
+            reflectedRayColor = reflectRay(depth - 1, reflectedRay);
         }
 
-        double diffuseBrightness = getDiffuseBrightness(intersectionPoint, curObj.getNormal(intersection.v),
-                intersection.index);
+        double diffuseBrightness = getDiffuseBrightness(ray);
 
         double specularBrightness = getSpecularBrightness(reflectedRay) *
                 curObj.getReflectivity();
@@ -218,20 +129,19 @@ public class Camera implements Callable {
         return c;
     }
 
-    private double getDiffuseBrightness(Point p, Vector normal, int skipIndex) {
+    private double getDiffuseBrightness(Ray ray) {
         Vector dir = ((Sun) scene.lightSource).getDirection();
         dir.scale(-1);
-        VectorIndex intersection = getIntersectionPoint(p, dir, skipIndex);
-        if (intersection.v != null) {
+        if (ray.getIntersection() != null) {
             return MINIMUM_ILLUMINATION;
         }
 
-        return Math.max(MINIMUM_ILLUMINATION, Math.cos(Vector.angleBetween(normal, dir)));
+        return Math.max(MINIMUM_ILLUMINATION, Math.cos(Vector.angleBetween(ray.getNormal(), dir)));
     }
 
-    private double getSpecularBrightness(Vector reflectedRay) {
+    private double getSpecularBrightness(Ray reflectedRay) {
         Vector dir = ((Sun) scene.lightSource).getDirection();
-        double angle = Vector.angleBetween(dir, reflectedRay);
+        double angle = Vector.angleBetween(dir, reflectedRay.getRay());
 
         return Math.pow(Math.min(0, Math.cos(angle)), 20.0);
     }
@@ -244,7 +154,7 @@ public class Camera implements Callable {
                 Vector ray = new Vector(focus, p);
                 ray.unitVector();
                 ray.rotateXYZ(rotation.x, rotation.y, rotation.z);
-                frame[height - y - 1][x] = reflectRay(MAX_BOUNCES, -1, p, ray);
+                frame[height - y - 1][x] = reflectRay(MAX_BOUNCES, new Ray(p, ray, -1, -1));
                 // frame[height - y - 1][x] = reflectRayWithRefraction(MAX_BOUNCES, -1, p, ray);
             }
         }

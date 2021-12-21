@@ -6,9 +6,7 @@ import java.util.List;
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
-import Blue.Solids.CustomSolid;
 import Blue.Solids.Solid;
-import Blue.Solids.Sphere;
 import Blue.Light.Sun;
 
 public class Camera implements Callable {
@@ -21,16 +19,6 @@ public class Camera implements Callable {
     int width, height;
     double focal_length;
     Color[][] frame;
-
-    private class VectorIndex {
-        Vector v;
-        int index;
-
-        VectorIndex(Vector v, int index) {
-            this.v = v;
-            this.index = index;
-        }
-    }
 
     public Camera(int width, int height, Scene scene, double focal_length) {
         this.width = width;

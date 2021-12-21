@@ -32,17 +32,17 @@ public class STL {
         return v;
     }
 
-    private static Triangle getTriangle(byte[] totalBytes, int offset, int index) {
+    private static Triangle getTriangle(byte[] totalBytes, int offset, int index, double scale) {
 
         Vector normal = getVector(totalBytes, offset);
-        Point a = new Point(getVector(totalBytes, offset + 12));
-        Point b = new Point(getVector(totalBytes, offset + 24));
-        Point c = new Point(getVector(totalBytes, offset + 36));
+        Point a = new Point(getVector(totalBytes, offset + 12).scale(scale));
+        Point b = new Point(getVector(totalBytes, offset + 24).scale(scale));
+        Point c = new Point(getVector(totalBytes, offset + 36).scale(scale));
 
         return new Triangle(a, b, c, normal, index);
     }
 
-    public static List<Triangle> load(String fileName) {
+    public static List<Triangle> load(String fileName, double scale) {
         List<Triangle> triangles = new ArrayList<>();
 
         try {
@@ -72,7 +72,7 @@ public class STL {
             int offset = 84;
 
             for (int i = 0; i < noOfVertices; i++) {
-                triangles.add(getTriangle(bytes, offset, i));
+                triangles.add(getTriangle(bytes, offset, i, scale));
                 offset += 50;
             }
 

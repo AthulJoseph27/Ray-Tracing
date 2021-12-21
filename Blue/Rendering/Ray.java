@@ -83,4 +83,18 @@ public class Ray {
         this.ray = ray;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                " origin='" + getOrigin() + "'" +
+                ", intersection='" + getIntersection() + "'" +
+                ", orginIndex='" + getOrginIndex() + "'" +
+                ", orginSubIndex='" + getOrginSubIndex() + "'" +
+                ", hitIndex='" + getHitIndex() + "'" +
+                ", hitSubIndex='" + getHitSubIndex() + "'" +
+                ", normal='" + getNormal() + "'" +
+                ", ray='" + getRay() + "'" +
+                "}";
+    }
+
 }

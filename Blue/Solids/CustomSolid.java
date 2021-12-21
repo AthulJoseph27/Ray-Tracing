@@ -3,11 +3,12 @@ package Blue.Solids;
 import java.awt.Color;
 import java.util.List;
 
+import Blue.GUI.Callable;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
 import Blue.Rendering.Ray;
 
-public class CustomSolid implements Solid {
+public class CustomSolid implements Solid, Callable {
     int index;
     Point rotation;
     Point center;
@@ -26,7 +27,7 @@ public class CustomSolid implements Solid {
 
     private List<Triangle> load(String fileName) {
         // Check extenstions and call corresponding load Functions
-        return STL.load(fileName);
+        return STL.load(fileName, 100.0);
     }
 
     @Override
@@ -50,11 +51,9 @@ public class CustomSolid implements Solid {
     @Override
     public Ray getIntersectionPoint(Ray ray) {
         Vector initialIntersection = ray.getIntersection();
-        boolean thisHit = (ray.getHitIndex() == index);
 
         for (Triangle t : triangles) {
-            if (thisHit && ray.getHitSubIndex() == t.index)
-                ray = t.getIntersectionPoint(ray);
+            ray = t.getIntersectionPoint(ray);
         }
 
         if (initialIntersection != ray.getIntersection()) {
@@ -72,6 +71,14 @@ public class CustomSolid implements Solid {
     @Override
     public double getReflectivity() {
         return this.reflectivity;
+    }
+
+    @Override
+    public void transform(Point p, String type) {
+        if (type.compareTo("center") == 0) {
+            this.center = p;
+        }
+
     }
 
 }

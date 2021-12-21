@@ -144,10 +144,11 @@ public class Vector {
         k = new_k;
     }
 
-    public void scale(double value) {
+    public Vector scale(double value) {
         i *= value;
         j *= value;
         k *= value;
+        return this;
     }
 
     public Vector copy() {

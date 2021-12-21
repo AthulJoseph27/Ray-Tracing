@@ -31,17 +31,20 @@ public class Main {
                 Scene scene = new Scene(lightSource,
                                 "/Users/athuljoseph/Desktop/Projects/RayTracing/assets/Equirectangular_Images/Sky.jpg");
 
-                scene.add(new Sphere(200, new Point(100, 900, 250), new Color(27, 140, 255),
-                                1.0, scene.objects.size()));
+                scene.add(new CustomSolid("/Users/athuljoseph/Desktop/hex.stl", Color.WHITE, 0.0,
+                                scene.objects.size()));
 
-                scene.add(new Sphere(200, new Point(500, 900, 250), new Color(27, 140, 255),
-                                0.50, scene.objects.size()));
+                // scene.add(new Sphere(200, new Point(100, 900, 250), new Color(27, 140, 255),
+                // 1.0, scene.objects.size()));
+
+                // scene.add(new Sphere(200, new Point(500, 900, 250), new Color(27, 140, 255),
+                // 0.50, scene.objects.size()));
 
                 Camera cam = new Camera(WIDTH, HEIGHT, scene, FL);
 
                 Window window = new Window(WIDTH, HEIGHT);
                 new SliderXYZ(scene, "BG Rotation", -360, 360, 0, "bgRotation");
-                new SliderXYZ((Callable) lightSource, "Light Rotation", -360, 360, 0,
+                new SliderXYZ((Callable) cam, "Rotation", -360, 360, 0,
                                 "rotation");
                 new SliderXYZ(cam, "Location", new Point(-10000, -10000, -10000),
                                 new Point(10000, 10000, 10000),

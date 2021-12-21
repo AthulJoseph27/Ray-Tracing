@@ -2,7 +2,6 @@ package Blue.Solids;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.List;
 
 import Blue.Geometry.Limit;
 import Blue.Geometry.Point;
@@ -12,9 +11,11 @@ import Blue.Rendering.Ray;
 public class Triangle implements Solid {
 
     Point[] vertices = new Point[3];
+    Point[] orginalVertices = new Point[3];
     Point center;
-    Vector normal;
-    double reflectivity, refractivity;
+    Point delta;
+    Vector normal, orginalNormal;
+    double reflectivity;
     Color color;
     int index = -1;
 
@@ -22,9 +23,14 @@ public class Triangle implements Solid {
         this.vertices[0] = a;
         this.vertices[1] = b;
         this.vertices[2] = c;
+        this.orginalVertices[0] = a.copy();
+        this.orginalVertices[1] = b.copy();
+        this.orginalVertices[2] = c.copy();
         this.normal = normal;
+        this.orginalNormal = normal.copy();
         this.reflectivity = 0;
         this.index = index;
+        this.delta = new Point();
         this.center = getCenter();
         this.color = Color.WHITE;
     }
@@ -33,8 +39,13 @@ public class Triangle implements Solid {
         this.vertices[0] = a;
         this.vertices[1] = b;
         this.vertices[2] = c;
+        this.orginalVertices[0] = a.copy();
+        this.orginalVertices[1] = b.copy();
+        this.orginalVertices[2] = c.copy();
         this.normal = normal;
+        this.orginalNormal = normal.copy();
         this.center = getCenter();
+        this.delta = new Point();
         this.index = index;
         this.reflectivity = reflectivity;
         this.color = Color.WHITE;
@@ -123,13 +134,13 @@ public class Triangle implements Solid {
         double S = Vector.dotProduct(normal, u);
 
         if (S == 0) {
-            return null;
+            return ray;
         }
 
         double t = (R - Q) / S;
 
         if (t < 0)
-            return null;
+            return ray;
 
         Vector intersection = u.copy();
 
@@ -147,6 +158,20 @@ public class Triangle implements Solid {
         }
 
         return ray;
+    }
+
+    public void transform(Point p, String type) {
+        if (type.compareTo("center") == 0) {
+            this.delta = p;
+            for (int i = 0; i < 3; i++) {
+                vertices[i] = orginalVertices[i].copy();
+                vertices[i].x += p.x;
+                vertices[i].y += p.y;
+                vertices[i].z += p.z;
+            }
+            this.center = getCenter();
+        }
+
     }
 
     @Override

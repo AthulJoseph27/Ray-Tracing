@@ -1,11 +1,8 @@
 package Blue.Solids;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
 
 import Blue.GUI.Callable;
-import Blue.Geometry.Limit;
 import Blue.Geometry.Point;
 import Blue.Geometry.Vector;
 import Blue.Rendering.Ray;

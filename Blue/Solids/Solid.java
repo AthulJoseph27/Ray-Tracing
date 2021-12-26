@@ -3,7 +3,6 @@ package Blue.Solids;
 import java.awt.*;
 
 import Blue.Geometry.Point;
-import Blue.Geometry.Vector;
 import Blue.Rendering.Ray;
 
 public interface Solid {

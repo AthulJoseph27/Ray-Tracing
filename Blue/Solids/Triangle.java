@@ -12,8 +12,7 @@ public class Triangle implements Solid {
 
     Point[] vertices = new Point[3];
     Point[] orginalVertices = new Point[3];
-    Point center;
-    Point delta;
+    Point center, delta, rotation;
     Vector normal, orginalNormal;
     double reflectivity;
     Color color;
@@ -31,6 +30,7 @@ public class Triangle implements Solid {
         this.reflectivity = 0;
         this.index = index;
         this.delta = new Point();
+        this.rotation = new Point();
         this.center = getCenter();
         this.color = Color.WHITE;
     }
@@ -46,6 +46,7 @@ public class Triangle implements Solid {
         this.orginalNormal = normal.copy();
         this.center = getCenter();
         this.delta = new Point();
+        this.rotation = new Point();
         this.index = index;
         this.reflectivity = reflectivity;
         this.color = Color.WHITE;
@@ -68,25 +69,39 @@ public class Triangle implements Solid {
         return p;
     }
 
-    private boolean isInsideTriangle(Vector p) {
-        Vector AB = new Vector(vertices[0], vertices[1]);
-        Vector BC = new Vector(vertices[1], vertices[2]);
-        Vector CA = new Vector(vertices[2], vertices[0]);
+    // private boolean sameSide(Point A, Vector n, Point p) {
+    // // EQ -> n.(A-X)
 
-        Vector AP = new Vector(vertices[0], p);
-        Vector BP = new Vector(vertices[1], p);
-        Vector CP = new Vector(vertices[2], p);
+    // double sign1 = Vector.dotProduct(n, new Vector(A, p));
+    // double sign2 = Vector.dotProduct(n, new Vector(A, center));
 
-        Vector u = Vector.unitVector(Vector.crossProduct(AB, AP));
-        Vector v = Vector.unitVector(Vector.crossProduct(BC, BP));
-        Vector w = Vector.unitVector(Vector.crossProduct(CA, CP));
+    // // System.out.println(n);
+    // // System.out.println(sign1);
+    // // System.out.println(sign2);
+    // // System.out.println();
 
-        double dir1 = Vector.dotProduct(u, v);
-        double dir2 = Vector.dotProduct(v, w);
+    // return ((sign1 > 0.0 && sign2 > 0.0) || (sign1 < 0.0 && sign2 < 0.0));
+    // }
 
-        // both should be 1
+    private boolean isInsideTriangle(Point p) {
 
-        return (Math.abs(1.0 - dir1) <= Limit.ERROR_LIMIT && Math.abs(1.0 - dir2) <= Limit.ERROR_LIMIT);
+        Vector AP = new Vector(p, vertices[1]);
+        Vector BP = new Vector(p, vertices[2]);
+        Vector CP = new Vector(p, vertices[0]);
+
+        Vector u = Vector.crossProduct(BP, CP);
+        Vector v = Vector.crossProduct(CP, AP);
+        Vector w = Vector.crossProduct(AP, BP);
+
+        if (Vector.dotProduct(u, v) < 0.0) {
+            return false;
+        }
+
+        if (Vector.dotProduct(u, w) < 0.0) {
+            return false;
+        }
+
+        return true;
 
     }
 
@@ -130,7 +145,8 @@ public class Triangle implements Solid {
 
         Vector c = new Vector(new Point(), center);
         double R = Vector.dotProduct(normal, c);
-        double Q = Vector.dotProduct(normal, new Vector(new Point(), ray.getOrigin()));
+        double Q = Vector.dotProduct(normal, new Vector(new Point(),
+                ray.getOrigin()));
         double S = Vector.dotProduct(normal, u);
 
         if (S == 0) {
@@ -147,7 +163,7 @@ public class Triangle implements Solid {
         intersection.scale(t);
         intersection.add(new Vector(new Point(), ray.getOrigin()));
 
-        if (isInsideTriangle(intersection)) {
+        if (isInsideTriangle(new Point(intersection))) {
             if ((ray.getIntersection() == null)
                     || (ray.getOrigin().euclideanDistance(ray.getIntersection()) > ray.getOrigin()
                             .euclideanDistance(intersection))) {
@@ -158,6 +174,60 @@ public class Triangle implements Solid {
         }
 
         return ray;
+
+        // Möller–Trumbore intersection algorithm
+
+        // Vector AB = new Vector(vertices[0], vertices[1]);
+        // Vector AC = new Vector(vertices[0], vertices[2]);
+
+        // Vector h, s, q;
+
+        // h = Vector.crossProduct(ray.getRay().unitVector(), AC);
+
+        // double a, f, u, v;
+
+        // a = Vector.dotProduct(AB, h);
+
+        // if (Math.abs(a) < Limit.ERROR_LIMIT) {
+        // // Parallel to triangle
+        // return ray;
+        // }
+
+        // f = 1.0 / a;
+
+        // s = new Vector(vertices[0], ray.getOrigin());
+        // u = f * Vector.dotProduct(s, h);
+
+        // if (u < 0.0 || u > 1.0) {
+        // return ray;
+        // }
+
+        // q = Vector.crossProduct(s, AB);
+        // v = f * Vector.dotProduct(ray.getRay(), q);
+
+        // if (v < 0.0 || (u + v) > 1.0) {
+        // return ray;
+        // }
+
+        // // At this stage we can compute t to find out where the intersection point is
+        // // on the line.
+        // double t = f * Vector.dotProduct(AC, q);
+
+        // // At this stage we can compute t to find out where the intersection point is
+        // on
+        // // the line.
+        // if (t > Limit.ERROR_LIMIT) {
+        // // ray intersection
+        // Vector intersection = Vector.unitVector(ray.getRay()).scale(t)
+        // .add(new Vector(new Point(), ray.getOrigin()));
+        // ray.setHitSubIndex(index);
+        // ray.setIntersection(intersection);
+        // ray.setNormal(this.normal.copy());
+        // } // else This means that there is a line intersection but not a ray
+        // intersection.
+
+        // return ray;
+
     }
 
     public void transform(Point p, String type) {
@@ -170,6 +240,12 @@ public class Triangle implements Solid {
                 vertices[i].z += p.z;
             }
             this.center = getCenter();
+        } else if (type.compareTo("rotation") == 0) {
+            this.rotation = p;
+            this.normal = orginalNormal.copy();
+            this.normal.rotateX(p.x);
+            this.normal.rotateY(p.y);
+            this.normal.rotateZ(p.z);
         }
 
     }

@@ -54,23 +54,26 @@ public class Vector {
         return new Vector(new Point(), new Point(v.i / magnitude, v.j / magnitude, v.k / magnitude));
     }
 
-    public void unitVector() {
+    public Vector unitVector() {
         double magnitude = getMagnitude();
         i /= magnitude;
         j /= magnitude;
         k /= magnitude;
+        return this;
     }
 
-    public void add(Vector o) {
+    public Vector add(Vector o) {
         i += o.i;
         j += o.j;
         k += o.k;
+        return this;
     }
 
-    public void substract(Vector o) {
+    public Vector substract(Vector o) {
         i -= o.i;
         j -= o.j;
         k -= o.k;
+        return this;
     }
 
     public double euclideanDistance(Vector o) {
@@ -83,7 +86,8 @@ public class Vector {
 
     public static Vector crossProduct(Vector a, Vector b) {
 
-        Point p = new Point(a.j * b.k - a.k * b.j, a.i * b.k - a.k * b.i, a.i * b.j - a.j * b.j);
+        Point p = new Point(a.j * b.k - a.k * b.j, a.i * b.k - a.k * b.i, a.i * b.j -
+                a.j * b.i);
 
         return new Vector(new Point(), p);
     }
@@ -94,7 +98,33 @@ public class Vector {
         return Math.acos(result);
     }
 
-    public void rotateX(double angle) {
+    public static Vector rotateWRT(Vector a, Vector b, double angle) {
+        // a = a||b + a_|_b
+
+        // a||b = (a.b/b.b)*b
+
+        // a_|_b = a - a||b
+
+        Vector aParallel = b.copy().scale(Vector.dotProduct(a, b) / Vector.dotProduct(b, b));
+        Vector aPerpendicular = a.copy().substract(aParallel);
+
+        // w = b x a_|_b
+
+        Vector w = Vector.crossProduct(b, aPerpendicular);
+
+        double x1 = Math.cos(angle) / aPerpendicular.getMagnitude();
+        double x2 = Math.sin(angle) / w.getMagnitude();
+
+        // a_|_b,angle = ||aPerpendicular||(x1aPerpendicular + x2w)
+
+        Vector q = aPerpendicular.copy().scale(x1).add(w.scale(x2)).scale(aPerpendicular.getMagnitude());
+
+        // aRequired = a_|_b,angle + aParallel
+
+        return q.add(aParallel);
+    }
+
+    public Vector rotateX(double angle) {
 
         double rx[][] = { { 1, 0, 0 }, { 0, Math.cos(angle), (-Math.sin(angle)) },
                 { 0, Math.sin(angle), Math.cos(angle) } };
@@ -103,9 +133,11 @@ public class Vector {
         new_j = rx[1][0] * i + rx[1][1] * j + rx[1][2] * k;
         k = rx[2][0] * i + rx[2][1] * j + rx[2][2] * k;
         j = new_j;
+
+        return this;
     }
 
-    public void rotateY(double angle) {
+    public Vector rotateY(double angle) {
 
         double ry[][] = { { Math.cos(angle), 0, Math.sin(angle) }, { 0, 1, 0 },
                 { (-Math.sin(angle)), 0, Math.cos(angle) } };
@@ -115,9 +147,10 @@ public class Vector {
         k = ry[2][0] * i + ry[2][1] * j + ry[2][2] * k;
         i = new_i;
 
+        return this;
     }
 
-    public void rotateZ(double angle) {
+    public Vector rotateZ(double angle) {
 
         double ry[][] = { { Math.cos(angle), (-Math.sin(angle)), 0 }, { Math.sin(angle), Math.cos(angle), 0 },
                 { 0, 0, 1 } };
@@ -127,21 +160,26 @@ public class Vector {
         j = ry[1][0] * i + ry[1][1] * j + ry[1][2] * k;
         i = new_i;
 
+        return this;
     }
 
-    public void rotateXYZ(double rx, double ry, double rz) {
+    public Vector rotateXYZ(double rx, double ry, double rz) {
         rotateX(rx);
         rotateY(ry);
         rotateZ(rz);
+
+        return this;
     }
 
-    public void customRotate(double[][] r) {
+    public Vector customRotate(double[][] r) {
         double new_i = r[0][0] * i + r[0][1] * j + r[0][2] * k;
         double new_j = r[1][0] * i + r[1][1] * j + r[1][2] * k;
         double new_k = r[2][0] * i + r[2][1] * j + r[2][2] * k;
         i = new_i;
         j = new_j;
         k = new_k;
+
+        return this;
     }
 
     public Vector scale(double value) {

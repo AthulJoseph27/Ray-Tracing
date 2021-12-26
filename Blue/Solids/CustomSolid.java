@@ -1,6 +1,7 @@
 package Blue.Solids;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 import Blue.GUI.Callable;
@@ -17,7 +18,16 @@ public class CustomSolid implements Solid, Callable {
     List<Triangle> triangles;
 
     public CustomSolid(String fileName, Color color, double reflectivity, int index) {
-        this.triangles = load(fileName);
+        // this.triangles = load(fileName);
+        this.triangles = new ArrayList<Triangle>() {
+            {
+                add(new Triangle(new Point(200, 50, 200), new Point(200, 250, 400), new Point(200, 450, 200),
+                        new Vector(new Point(), new Point(1, 0, 0)), 0.0, 0));
+                // add(new Triangle(new Point(450, 200, 200), new Point(250, 200, 400), new
+                // Point(50, 200, 200),
+                // new Vector(new Point(), new Point(0, 1, 0)), 0.0, 0));
+            }
+        };
         this.color = color;
         this.index = index;
         this.reflectivity = reflectivity;
@@ -77,6 +87,14 @@ public class CustomSolid implements Solid, Callable {
     public void transform(Point p, String type) {
         if (type.compareTo("center") == 0) {
             this.center = p;
+            for (Triangle t : triangles) {
+                t.transform(p, type);
+            }
+        } else if (type.compareTo("rotation") == 0) {
+            this.rotation = p;
+            for (Triangle t : triangles) {
+                t.transform(p, type);
+            }
         }
 
     }

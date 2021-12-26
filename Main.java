@@ -34,8 +34,14 @@ public class Main {
                 scene.add(new CustomSolid("/Users/athuljoseph/Desktop/hex.stl", Color.WHITE, 0.0,
                                 scene.objects.size()));
 
-                // scene.add(new Sphere(200, new Point(100, 900, 250), new Color(27, 140, 255),
-                // 1.0, scene.objects.size()));
+                scene.add(new Sphere(20, new Point(450, 200, 200), new Color(27, 140, 255),
+                                0.1, scene.objects.size()));
+
+                scene.add(new Sphere(20, new Point(250, 200, 400), new Color(27, 140, 255),
+                                0.1, scene.objects.size()));
+
+                scene.add(new Sphere(20, new Point(50, 200, 200), new Color(27, 140, 255),
+                                0.1, scene.objects.size()));
 
                 // scene.add(new Sphere(200, new Point(500, 900, 250), new Color(27, 140, 255),
                 // 0.50, scene.objects.size()));

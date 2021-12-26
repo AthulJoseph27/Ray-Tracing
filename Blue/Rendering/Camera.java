@@ -1,7 +1,6 @@
 package Blue.Rendering;
 
 import java.awt.*;
-import java.util.List;
 
 import Blue.GUI.Callable;
 import Blue.Geometry.Point;
@@ -12,7 +11,7 @@ import Blue.Light.Sun;
 public class Camera implements Callable {
 
     private static final double MINIMUM_ILLUMINATION = 0.5;
-    private static final int MAX_BOUNCES = 2;
+    private static final int MAX_BOUNCES = 0;
 
     Scene scene;
     Point focus, planeCenter, deltaLocation, rotation;
